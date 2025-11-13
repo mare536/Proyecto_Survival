@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: b2e3d599d34bd7ac89cfd33d9834a00e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - textoVitalidad: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
+  - textoPuntos: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

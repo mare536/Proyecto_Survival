@@ -15,8 +15,15 @@ public class EnemyMovement : MonoBehaviour
     // Start se llama una vez antes de la primera actualización del frame
     void Start()
     {
-        // Obtiene el componente NavMeshAgent del enemigo
         navMeshAgent = GetComponent<NavMeshAgent>();
+
+        // Si no se asignó el Transform del jugador en el Inspector, intentar buscar por tag
+        if (player == null)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null) player = go.transform;
+            else Debug.LogWarning("EnemyMovement: 'player' no asignado y no se encontró GameObject con tag 'Player'.");
+        }
     }
 
     // Update se llama una vez por frame
@@ -33,7 +40,7 @@ public class EnemyMovement : MonoBehaviour
                 if (Time.time - ultimoAtaque >= cooldownAtaque)
                 {
                     Player jugador = player.GetComponent<Player>();
-                    if (jugador != null && Player.estaVivo)
+                    if (jugador != null && jugador.estaVivo)
                     {
                         jugador.recibirDaño(dañoAlJugador); // daño por defecto (ajusta si quieres usar otro valor)
                         ultimoAtaque = Time.time;

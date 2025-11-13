@@ -36,28 +36,41 @@ public class PlayerMovementSimple : MonoBehaviour
     [SerializeField] private Vector2 tamañoPuntero = new Vector2(16f, 16f);
     // Estado si el cursor está bloqueado/oculto
     private bool cursorBloqueado = true;
+    private Player playerScript;
 
 
 
     private void Update()
     {
-        if (estaVivo == true)
+        // Si playerScript no está asignado, intentar obtenerlo (por si Player está añadido en runtime)
+        if (playerScript == null)
+        {
+            playerScript = GetComponent<Player>();
+        }
+
+        if (playerScript != null && playerScript.estaVivo)
         {
             MovimientoDelPersonaje();
             MovimientoDeLaCamara();
             GestionCursor();
-        }else
+        }
+        else
         {
             BloquearCursor(false);
         }
-        
     }
 
     private void Start()
     {
-    // Al iniciar el juego en modo primera persona, bloqueamos el cursor
-    // para que el ratón controle la cámara y no se salga de la ventana.
-    BloquearCursor(true);
+        // Intentar obtener el script Player y avisar si falta
+        playerScript = GetComponent<Player>();
+        if (playerScript == null)
+        {
+            Debug.LogWarning("PlayerMovement: no se encontró Player en el mismo GameObject. Si Player está en otro objeto, asigna la referencia correcta o añade tag 'Player' y modifica el código.");
+        }
+
+        // Bloquear cursor después de comprobar el Player
+        BloquearCursor(true);
     }
 
     void GestionCursor()

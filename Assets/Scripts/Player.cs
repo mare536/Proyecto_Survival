@@ -5,21 +5,27 @@ using TMPro; // Para mostrar texto en la UI
 
 public class Player : MonoBehaviour
 {
-    public static bool estaVivo = false;
-    [SerializeField]private float vitalidad = 100f;
+    public bool estaVivo = false;
+    [SerializeField] private float vitalidad = 100f;
     [SerializeField] private int puntos = 0;
     [SerializeField] private TextMeshProUGUI textoVitalidad;
     [SerializeField] private TextMeshProUGUI textoPuntos;
-    
+
+
 
     public void Start()
     {
         estaVivo = true;
+        // Inicializar la UI al inicio
+        textoVitalidad.text = "Vitalidad: " + vitalidad;
+        textoPuntos.text = "Puntos: " + puntos;
+
+
     }
 
     public void Update()
     {
-        if (estaVivo)
+        if (estaVivo==true)
         {
             // Lógica del jugador cuando está vivo
             if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -41,17 +47,24 @@ public class Player : MonoBehaviour
     public void agregarPuntos(int cantidad)
     {
         puntos += cantidad;
-        textoPuntos.text = "Puntos: " + puntos;
-
+        if (textoPuntos != null)
+            textoPuntos.text = "Puntos: " + puntos;
+        else
+            Debug.Log("Puntos: " + puntos + " (textoPuntos no asignado).");
     }
     public void recibirDaño(float cantidad)
     {
         vitalidad -= cantidad;
-        if (vitalidad < 0)
-        {
-            vitalidad = 0;
-        }
-        textoVitalidad.text = "Vitalidad: " + vitalidad;
-    }
+        if (vitalidad < 0) vitalidad = 0;
+        if (textoVitalidad != null)
+            textoVitalidad.text = "Vitalidad: " + vitalidad;
+        else
+            Debug.Log("Vitalidad: " + vitalidad + " (textoVitalidad no asignado).");
 
+        if (vitalidad <= 0 && estaVivo)
+        {
+            estaVivo = false;
+            Debug.Log("Jugador muerto.");
+        }
+    }
 }

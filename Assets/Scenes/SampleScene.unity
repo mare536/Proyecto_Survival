@@ -124,33 +124,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7015336828288576039, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
   m_PrefabInstance: {fileID: 6726321111300112800}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &134674840 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
-  m_PrefabInstance: {fileID: 6726321111300112800}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &160664872 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5917936449997056757, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
   m_PrefabInstance: {fileID: 3031364441423937832}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &160664873 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
-  m_PrefabInstance: {fileID: 3031364441423937832}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &286474588
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,10 +824,9 @@ GameObject:
   - component: {fileID: 952579452}
   - component: {fileID: 952579451}
   - component: {fileID: 952579455}
-  - component: {fileID: 952579458}
   m_Layer: 0
   m_Name: PlayerBody
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -974,22 +951,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &952579458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 952579449}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2e3d599d34bd7ac89cfd33d9834a00e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
-  vitalidad: 100
-  puntos: 0
-  textoVitalidad: {fileID: 160664873}
-  textoPuntos: {fileID: 134674840}
 --- !u!1 &955009362
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,7 +1073,7 @@ GameObject:
   - component: {fileID: 967345918}
   - component: {fileID: 967345921}
   - component: {fileID: 967345920}
-  - component: {fileID: 967345919}
+  - component: {fileID: 967345922}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1136,22 +1097,6 @@ Transform:
   - {fileID: 952579450}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &967345919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 967345917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2e3d599d34bd7ac89cfd33d9834a00e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
-  vitalidad: 100
-  puntos: 0
-  textoVitalidad: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
-  textoPuntos: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
 --- !u!114 &967345920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1198,6 +1143,23 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &967345922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967345917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2e3d599d34bd7ac89cfd33d9834a00e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  estaVivo: 0
+  vitalidad: 100
+  puntos: 0
+  textoVitalidad: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
+  textoPuntos: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
 --- !u!1 &1254317135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1730,7 +1692,7 @@ PrefabInstance:
     - target: {fileID: 2344462225547872782, guid: 791a4fee2b018b9bbb7e432e6b0f6d82, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 952579450}
+      objectReference: {fileID: 967345918}
     - target: {fileID: 6641175193488467968, guid: 791a4fee2b018b9bbb7e432e6b0f6d82, type: 3}
       propertyPath: m_Name
       value: Enemy
