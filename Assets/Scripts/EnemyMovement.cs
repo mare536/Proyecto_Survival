@@ -32,21 +32,27 @@ public class EnemyMovement : MonoBehaviour
         // Si existe una referencia al jugador, el enemigo lo sigue
         if (player != null)
         {
-            // Establece la posición del jugador como destino del enemigo
-            navMeshAgent.SetDestination(player.position);
-            // Si el agente ha llegado suficientemente cerca y ha pasado el cooldown, atacar
-            if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= rangoAtaque)
+            // PROTECCIÓN: solo usar el NavMeshAgent si está inicializado, habilitado y en la NavMesh
+            if (navMeshAgent != null && navMeshAgent.isOnNavMesh && navMeshAgent.enabled)
             {
-                if (Time.time - ultimoAtaque >= cooldownAtaque)
+                // Establece la posición del jugador como destino del enemigo
+                navMeshAgent.SetDestination(player.position);
+
+                // Si el agente ha llegado suficientemente cerca y ha pasado el cooldown, atacar
+                if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= rangoAtaque)
                 {
-                    Player jugador = player.GetComponent<Player>();
-                    if (jugador != null && jugador.estaVivo)
+                    if (Time.time - ultimoAtaque >= cooldownAtaque)
                     {
-                        jugador.recibirDaño(dañoAlJugador); // daño por defecto (ajusta si quieres usar otro valor)
-                        ultimoAtaque = Time.time;
+                        Player jugador = player.GetComponent<Player>();
+                        if (jugador != null && jugador.estaVivo)
+                        {
+                            jugador.recibirDaño(dañoAlJugador); // daño por defecto (ajusta si quieres usar otro valor)
+                            ultimoAtaque = Time.time;
+                        }
                     }
                 }
             }
+            // Si el agente no está disponible (p.ej. el enemigo murió o se desactivó), no intentar acceder a remainingDistance
         }   
     }
 }

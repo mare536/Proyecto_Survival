@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -302,6 +303,26 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5f247d263519aa278fd43d393038e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  camara: {fileID: 0}
+  "da\xF1o": 25
+  alcance: 50
+  cadenciaPorSegundo: 3
+  impactoPrefab: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &349388433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1158,8 +1179,8 @@ MonoBehaviour:
   estaVivo: 0
   vitalidad: 100
   puntos: 0
-  textoVitalidad: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
-  textoPuntos: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
+  textoVitalidad: {fileID: 1337642051}
+  textoPuntos: {fileID: 1815371476}
 --- !u!1 &1254317135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,6 +1284,17 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1337642051 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4158928747501834472, guid: b2beebc1db4b31339a10775d954b6d08, type: 3}
+  m_PrefabInstance: {fileID: 3031364441423937832}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1397808761
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,6 +1440,37 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 9d1f563df20143ee5b9bf3f906476a58, type: 2}
   m_BuildHeightMesh: 0
+--- !u!1 &1678177070 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6641175193488467968, guid: 791a4fee2b018b9bbb7e432e6b0f6d82, type: 3}
+  m_PrefabInstance: {fileID: 8528852433362771801}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1678177074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678177070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a632ad64225f37891ad43ed020a822ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  vidaMaxima: 50
+  puntosAlMorir: 10
+  tiempoDestruccion: 0.5
+--- !u!114 &1815371476 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6943599591134731060, guid: aa28bb96db995ae0c8eb646a1cd669ce, type: 3}
+  m_PrefabInstance: {fileID: 6726321111300112800}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1959908732
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,7 +1803,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6641175193488467968, guid: 791a4fee2b018b9bbb7e432e6b0f6d82, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1678177074}
   m_SourcePrefab: {fileID: 100100000, guid: 791a4fee2b018b9bbb7e432e6b0f6d82, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

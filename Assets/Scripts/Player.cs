@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
         textoPuntos.text = "Puntos: " + puntos;
 
 
+
     }
 
     public void Update()
@@ -49,8 +50,6 @@ public class Player : MonoBehaviour
         puntos += cantidad;
         if (textoPuntos != null)
             textoPuntos.text = "Puntos: " + puntos;
-        else
-            Debug.Log("Puntos: " + puntos + " (textoPuntos no asignado).");
     }
     public void recibirDaño(float cantidad)
     {
@@ -58,8 +57,6 @@ public class Player : MonoBehaviour
         if (vitalidad < 0) vitalidad = 0;
         if (textoVitalidad != null)
             textoVitalidad.text = "Vitalidad: " + vitalidad;
-        else
-            Debug.Log("Vitalidad: " + vitalidad + " (textoVitalidad no asignado).");
 
         if (vitalidad <= 0 && estaVivo)
         {
