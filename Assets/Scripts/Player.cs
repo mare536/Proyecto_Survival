@@ -19,24 +19,12 @@ public class Player : MonoBehaviour
         // Inicializar la UI al inicio
         textoVitalidad.text = "Vitalidad: " + vitalidad;
         textoPuntos.text = "Puntos: " + puntos;
-
-
-
     }
 
     public void Update()
     {
         if (estaVivo==true)
         {
-            // Lógica del jugador cuando está vivo
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                agregarPuntos(10);
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                recibirDaño(15f);
-            }
             if (vitalidad <= 0)
             {
                 estaVivo = false;

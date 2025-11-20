@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8780509797641519574}
   - component: {fileID: 5109402054554962668}
   - component: {fileID: 2344462225547872782}
+  - component: {fileID: 2782269259234000681}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -72,6 +73,22 @@ MonoBehaviour:
   rangoAtaque: 1.2
   cooldownAtaque: 1
   "da\xF1oAlJugador": 10
+  animator: {fileID: 0}
+--- !u!114 &2782269259234000681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6641175193488467968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a632ad64225f37891ad43ed020a822ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  vidaMaxima: 50
+  puntosAlMorir: 10
+  tiempoDestruccion: 0.5
 --- !u!1 &8684553074901692372
 GameObject:
   m_ObjectHideFlags: 0

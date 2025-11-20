@@ -2,17 +2,11 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    [Header("Configuración del arma")]
-    [SerializeField] private Camera camara; // cámara desde la que se dispara
-    [SerializeField] private float daño = 25f;
-    [SerializeField] private float alcance = 50f;
-    [SerializeField] private float cadenciaPorSegundo = 3f; // disparos por segundo
-
-    [Header("Opcional")]
-    [SerializeField] private GameObject impactoPrefab; // efecto al impactar (opcional)
-    [SerializeField] private LayerMask layerMask = ~0; // por defecto colisionar con todo
-
-    private float ultimoDisparo = 0f;
+    [SerializeField] private Camera camara;       // arrastra la cámara o dejar vacío para usar Camera.main
+    [SerializeField] private float daño = 25f;    // daño por disparo
+    [SerializeField] private float alcance = 50f; // alcance del disparo
+    [SerializeField] private LayerMask layerMask = ~0; // layers que puede golpear
+    [SerializeField] private GameObject impactoPrefab; // opcional: efecto al impactar
 
     void Start()
     {
@@ -22,14 +16,7 @@ public class Weapon : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
-        {
-            float intervalo = 1f / Mathf.Max(0.0001f, cadenciaPorSegundo);
-            if (Time.time - ultimoDisparo >= intervalo)
-            {
-                Disparar();
-                ultimoDisparo = Time.time;
-            }
-        }
+            Disparar();
     }
 
     private void Disparar()
@@ -39,14 +26,10 @@ public class Weapon : MonoBehaviour
         Ray r = camara.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
         if (Physics.Raycast(r, out RaycastHit hit, alcance, layerMask))
         {
-            // Buscar componente EnemyHealth en el collider o en sus padres
+            // Si el objeto o alguno de sus padres tiene EnemyHealth, aplicarle daño
             EnemyHealth eh = hit.collider.GetComponentInParent<EnemyHealth>();
-            if (eh != null)
-            {
-                eh.recibirDaño(daño);
-            }
+            if (eh != null) eh.recibirDaño(daño);
 
-            // Instanciar efecto de impacto (si se asignó)
             if (impactoPrefab != null)
             {
                 GameObject go = Instantiate(impactoPrefab, hit.point, Quaternion.LookRotation(hit.normal));

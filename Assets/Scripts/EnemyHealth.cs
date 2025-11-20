@@ -5,7 +5,7 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private float vidaMaxima = 50f;
     [SerializeField] private int puntosAlMorir = 10;
-    [SerializeField] private float tiempoDestruccion = 0.5f; // retraso antes de destruir el objeto
+    [SerializeField] private float tiempoDestruccion = 0.2f; // retraso antes de destruir el objeto
 
     private float vidaActual;
     private bool estaVivo = true;
@@ -37,7 +37,7 @@ public class EnemyHealth : MonoBehaviour
         // Parar el agente en vez de desactivarlo para evitar excepciones al leer remainingDistance
         if (agent != null) agent.isStopped = true;
 
-        // Dar puntos al jugador si existe 
+        // Dar puntos al jugador 
         Player jugador = Object.FindFirstObjectByType<Player>();
         if (jugador != null)
         {
