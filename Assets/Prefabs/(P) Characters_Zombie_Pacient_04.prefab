@@ -1231,7 +1231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a632ad64225f37891ad43ed020a822ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  vidaMaxima: 50
+  vidaMaxima: 40
   puntosAlMorir: 10
   tiempoDestruccion: 0.2
 --- !u!114 &4635527978723535899
@@ -1264,7 +1264,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5921367157248738129}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -1296,7 +1296,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Height: 4
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
