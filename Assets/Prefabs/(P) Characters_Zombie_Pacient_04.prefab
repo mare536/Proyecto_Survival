@@ -1250,7 +1250,11 @@ MonoBehaviour:
   rangoAtaque: 1.2
   cooldownAtaque: 1
   "da\xF1oAlJugador": 10
-  animator: {fileID: 1118881133962216337}
+  "sonidoGru\xF1ido": {fileID: 8300000, guid: efcaf6442f5b2740dad6d756e21d2310, type: 3}
+  sonidoAtaque: {fileID: 8300000, guid: 7afedbb857fe50c598e50f3b16388cc4, type: 3}
+  volumenSonido: 1
+  "tiempoGru\xF1idoMin": 3
+  "tiempoGru\xF1idoMax": 8
 --- !u!195 &5463979677502770177
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -1,61 +1,71 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+// Spawner sencillo: controla una ola por ronda. Genera "count" enemigos uno a uno
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;   // Asigna el prefab desde la carpeta Project
-    [SerializeField] private int maxConcurrent = 5;    // Máx enemigos simultáneos
-    [SerializeField] private float spawnRadius = 8f;   // Radio alrededor del spawner
-    [SerializeField] private float spawnInterval = 2f; // Segundos entre spawns
+    [SerializeField] private GameObject enemyPrefab;   // prefab (desde Project)
+    [SerializeField] private float spawnRadius = 8f;   // radio alrededor del spawner
+    [SerializeField] private float delayBetweenSpawns = 0.5f; // tiempo entre cada spawn de la ola
 
-    private List<GameObject> activeEnemies = new List<GameObject>();
+    private bool waveActive = false;
+    private List<GameObject> spawnedThisWave = new List<GameObject>();
 
-    private void Start()
+    // Llamar desde RoundManager para iniciar la ola en este spawner
+    public void StartWave(int count)
     {
-        if (enemyPrefab == null)
+        if (enemyPrefab == null) return;
+        if (waveActive) return; // ya en ola, ignorar
+        StartCoroutine(WaveRoutine(count));
+    }
+
+    // Genera "count" enemigos de uno en uno (con delay); después espera a que todos mueran
+    private IEnumerator WaveRoutine(int count)
+    {
+        waveActive = true;
+        spawnedThisWave.Clear();
+
+        for (int i = 0; i < count; i++)
         {
-            Debug.LogError("EnemySpawner: asigna enemyPrefab desde la carpeta Project.");
-            enabled = false;
-            return;
+            // posición aleatoria alrededor del spawner y ajustada a NavMesh si hay
+            Vector3 offset = Random.insideUnitSphere * spawnRadius;
+            offset.y = 0f;
+            Vector3 candidate = transform.position + offset;
+
+            Vector3 spawnPos = candidate;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(candidate, out hit, 2f, NavMesh.AllAreas))
+                spawnPos = hit.position;
+
+            // Instanciar enemigo
+            GameObject go = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+            var agent = go.GetComponent<NavMeshAgent>();
+            if (agent != null) agent.Warp(spawnPos);
+
+            spawnedThisWave.Add(go);
+
+            // esperar antes de generar el siguiente (evita spawnear todos a la vez)
+            yield return new WaitForSeconds(delayBetweenSpawns);
         }
-        InvokeRepeating(nameof(TrySpawn), spawnInterval, spawnInterval);
+
+        // Esperar hasta que TODOS los enemigos de esta ola sean destruidos
+        while (true)
+        {
+            // limpiar elementos ya destruidos
+            spawnedThisWave.RemoveAll(x => x == null);
+
+            if (spawnedThisWave.Count == 0)
+                break;
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // Ola finalizada
+        waveActive = false;
     }
 
-    private void TrySpawn()
-    {
-        CleanList();
-
-        if (activeEnemies.Count >= maxConcurrent) return;
-
-        // Posición aleatoria en círculo alrededor del spawner
-        Vector3 randomOffset = Random.insideUnitSphere * spawnRadius;
-        randomOffset.y = 0f;
-        Vector3 candidate = transform.position + randomOffset;
-
-        // Intentar ajustar la posición sobre la NavMesh (si hay NavMesh)
-        NavMeshHit hit;
-        Vector3 spawnPos = candidate;
-        if (NavMesh.SamplePosition(candidate, out hit, 2f, NavMesh.AllAreas))
-            spawnPos = hit.position;
-
-        GameObject go = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-        activeEnemies.Add(go);
-    }
-
-    private void CleanList()
-    {
-        activeEnemies.RemoveAll(item => item == null);
-    }
-
-    public void StopSpawner()
-    {
-        CancelInvoke(nameof(TrySpawn));
-    }
-
-    public void StartSpawner()
-    {
-        CancelInvoke(nameof(TrySpawn));
-        InvokeRepeating(nameof(TrySpawn), spawnInterval, spawnInterval);
-    }
+    // opcional: para saber si hay ola en curso
+    public bool IsWaveActive() => waveActive;
 }

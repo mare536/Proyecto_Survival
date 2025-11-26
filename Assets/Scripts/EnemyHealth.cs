@@ -13,7 +13,12 @@ public class EnemyHealth : MonoBehaviour
 
     void Start()
     {
-        vidaActual = vidaMaxima;
+        // aplicar multiplicador de ronda a la vida inicial
+        vidaActual = vidaMaxima * RoundManager.CurrentMultiplier;
+
+        // escalar puntos obtenidos por matar con el mismo multiplicador
+        puntosAlMorir = Mathf.Max(1, Mathf.RoundToInt(puntosAlMorir * RoundManager.CurrentMultiplier));
+
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -37,7 +42,7 @@ public class EnemyHealth : MonoBehaviour
         // Parar el agente en vez de desactivarlo para evitar excepciones al leer remainingDistance
         if (agent != null) agent.isStopped = true;
 
-        // Dar puntos al jugador 
+        // Dar puntos al jugador si existe (usar la nueva API recomendada)
         Player jugador = Object.FindFirstObjectByType<Player>();
         if (jugador != null)
         {

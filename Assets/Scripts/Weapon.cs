@@ -8,9 +8,20 @@ public class Weapon : MonoBehaviour
     [SerializeField] private LayerMask layerMask = ~0; // layers que puede golpear
     [SerializeField] private GameObject impactoPrefab; // opcional: efecto al impactar
 
+    // --- Sonido de disparo ---
+    [SerializeField] private AudioClip shotSound;    // asignar en el Inspector
+    [SerializeField] private float shotVolume = 1f;
+    private AudioSource audioSource;
+
     void Start()
     {
         if (camara == null) camara = Camera.main;
+
+        // Obtener o crear AudioSource para reproducir el sonido de disparo
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
     }
 
     void Update()
@@ -22,6 +33,10 @@ public class Weapon : MonoBehaviour
     private void Disparar()
     {
         if (camara == null) return;
+
+        // reproducir sonido (si hay)
+        if (shotSound != null && audioSource != null)
+            audioSource.PlayOneShot(shotSound, shotVolume);
 
         Ray r = camara.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
         if (Physics.Raycast(r, out RaycastHit hit, alcance, layerMask))

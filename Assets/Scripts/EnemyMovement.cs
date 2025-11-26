@@ -13,9 +13,21 @@ public class EnemyMovement : MonoBehaviour
     private float ultimoAtaque = -999f;
     [SerializeField] private float dañoAlJugador = 10f;
 
-    void Start()
+    // --- Sonidos del zombie ---
+    [Header("Sonidos")]
+    [SerializeField] private AudioClip sonidoGruñido;      // sonido ocasional (idle)
+    [SerializeField] private AudioClip sonidoAtaque;       // sonido al atacar
+    [SerializeField] private float volumenSonido = 1f;
+    [SerializeField] private float tiempoGruñidoMin = 3f;  // intervalo aleatorio mínimo entre gruñidos
+    [SerializeField] private float tiempoGruñidoMax = 8f;  // intervalo aleatorio máximo
+    private AudioSource audioSource;
+
+    private void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+
+        // escalar daño según la ronda actual
+        dañoAlJugador *= RoundManager.CurrentMultiplier;
 
         // Si no hay referencia al player en el Inspector, buscar por tag
         if (player == null)
@@ -23,6 +35,16 @@ public class EnemyMovement : MonoBehaviour
             var go = GameObject.FindGameObjectWithTag("Player");
             if (go != null) player = go.transform;
         }
+
+        // Preparar AudioSource (se crea si no existe)
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1f; // 3D sound (ajusta en Inspector si quieres 2D)
+
+        // Lanzar coroutine de sonidos idle si hay clip asignado
+        if (sonidoGruñido != null)
+            StartCoroutine(IdleGroanLoop());
     }
 
     void Update()
@@ -50,10 +72,27 @@ public class EnemyMovement : MonoBehaviour
 
                 if (jugador != null && jugador.estaVivo)
                 {
+                    // reproducir sonido de ataque si existe
+                    if (sonidoAtaque != null && audioSource != null)
+                        audioSource.PlayOneShot(sonidoAtaque, volumenSonido);
+
                     jugador.recibirDaño(dañoAlJugador);
                     ultimoAtaque = Time.time;
                 }
             }
+        }
+    }
+
+    // Coroutine simple que reproduce gruñidos ocasionales para dar vida al zombie
+    private System.Collections.IEnumerator IdleGroanLoop()
+    {
+        while (true)
+        {
+            float wait = Random.Range(tiempoGruñidoMin, tiempoGruñidoMax);
+            yield return new WaitForSeconds(wait);
+
+            if (audioSource != null && sonidoGruñido != null)
+                audioSource.PlayOneShot(sonidoGruñido, volumenSonido);
         }
     }
 }
