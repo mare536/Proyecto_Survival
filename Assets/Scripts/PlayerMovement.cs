@@ -47,6 +47,7 @@ public class PlayerMovementSimple : MonoBehaviour
         {
             playerScript = GetComponent<Player>();
         }
+        if (Time.timeScale == 0f) return;
 
         if (playerScript != null && playerScript.estaVivo)
         {
