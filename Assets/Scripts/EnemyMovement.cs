@@ -40,7 +40,7 @@ public class EnemyMovement : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f; // 3D sound (ajusta en Inspector si quieres 2D)
+        audioSource.spatialBlend = 1f; // 3D sound 
 
         // Lanzar coroutine de sonidos idle si hay clip asignado
         if (sonidoGruñido != null)

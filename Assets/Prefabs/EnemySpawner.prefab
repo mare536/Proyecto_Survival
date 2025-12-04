@@ -125,6 +125,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5921367157248738129, guid: 4e5d057549df84e5a8b005ba8f395420, type: 3}
-  maxConcurrent: 10
   spawnRadius: 10
-  spawnInterval: 3
+  delayBetweenSpawns: 1

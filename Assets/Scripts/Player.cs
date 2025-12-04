@@ -52,4 +52,22 @@ public class Player : MonoBehaviour
             Debug.Log("Jugador muerto.");
         }
     }
+    public bool GastarPuntos(int cantidad)
+    {
+        if (puntos >= cantidad)
+        {
+            puntos -= cantidad;
+            
+            // Actualizamos la UI inmediatamente
+            if (textoPuntos != null)
+                textoPuntos.text = "Puntos: " + puntos;
+                
+            return true; // Compra realizada
+        }
+        else
+        {
+            Debug.Log("No tienes suficientes puntos.");
+            return false; // No hay dinero
+        }
+    }
 }
