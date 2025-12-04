@@ -46,9 +46,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private WeaponEntry[] weapons;
     [SerializeField] private int startIndex = 0;
 
-    // --- ECONOMÍA (NUEVO) ---
-    [Header("Jugador")]
-    public int puntos = 1000; 
+    // HE BORRADO LA VARIABLE PUNTOS DE AQUÍ. EL ARMA NO NECESITA DINERO.
+
     // --- ESTADO ---
     private int currentIdx = 0;
     private float lastShotTime;
@@ -62,7 +61,7 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         if (camara == null) camara = Camera.main;
-        if (weaponHolder == null) weaponHolder = camara.transform;
+        if (weaponHolder == null && camara != null) weaponHolder = camara.transform;
         audioSource = GetComponent<AudioSource>();
 
         if (weapons != null && weapons.Length > 0)
@@ -79,7 +78,7 @@ public class Weapon : MonoBehaviour
 
     void Update()
     {
-        // IMPORTANTE: Si el juego está en pausa (Time.timeScale == 0), no hacemos nada
+        // Si el juego está en pausa, no hacemos nada
         if (Time.timeScale == 0) return;
 
         if (weapons == null || weapons.Length == 0) return;
@@ -88,7 +87,6 @@ public class Weapon : MonoBehaviour
         HandleReload();
         HandleShooting();
     }
-
 
     private void HandleWeaponSwitch()
     {
@@ -163,8 +161,10 @@ public class Weapon : MonoBehaviour
             }
             if (Physics.Raycast(camara.transform.position, direction, out RaycastHit hit, w.range))
             {
+                // Busca en el padre por si el collider está en un hijo
                 EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null) enemy.recibirDaño(w.damage);
+                
                 if (w.impactPrefab != null)
                 {
                     GameObject impact = Instantiate(w.impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
@@ -180,7 +180,9 @@ public class Weapon : MonoBehaviour
         WeaponEntry w = CurrentWeapon;
         if (textoInfo != null) textoInfo.text = "Recargando...";
         yield return new WaitForSeconds(w.reloadTime);
-        if (CurrentWeapon == w)
+        
+        // Verificamos que sigamos con la misma arma
+        if (weapons[currentIdx] == w)
         {
             int needed = w.magazineSize - w.currentAmmo;
             int taken = Mathf.Min(needed, w.currentReserve);
@@ -189,45 +191,25 @@ public class Weapon : MonoBehaviour
             UpdateUI();
         }
         isReloading = false;
-        if (CurrentWeapon == w) UpdateUI(); 
-    }
-
-    // --- FUNCIONES PÚBLICAS PARA LA TIENDA (NUEVO) ---
-
-    public void ComprarMunicion(int cantidad, int coste)
-    {
-        if (puntos >= coste)
-        {
-            puntos -= coste;
-            CurrentWeapon.currentReserve += cantidad;
-            UpdateUI();
-        }
-    }
-
-    public void MejorarDaño(float cantidadMejora, int coste)
-    {
-        if (puntos >= coste)
-        {
-            puntos -= coste;
-            CurrentWeapon.damage += cantidadMejora;
-            UpdateUI(); // Para actualizar los puntos en pantalla si los muestras
-        }
+        UpdateUI(); 
     }
 
     public void UpdateUI()
     {
         if (textoInfo == null) return;
         WeaponEntry w = CurrentWeapon;
-        // Ahora muestra también el Dinero ($)
-        textoInfo.text = $"{w.weaponName} {w.currentAmmo}/{w.currentReserve} ";
+        textoInfo.text = $"{w.weaponName} {w.currentAmmo}/{w.currentReserve}";
     }
-    // Método público para que la mesa sepa qué arma tienes en la mano
+
+    // --- MÉTODOS PÚBLICOS PARA LA MESA ---
+    
+    // Método para que la mesa sepa qué arma mejorar
     public WeaponEntry GetArmaActual()
     {
         return weapons[currentIdx];
     }
     
-    // Método para recargar interfaz desde fuera (cuando compras balas)
+    // Método para actualizar texto tras comprar munición
     public void RefrescarUI()
     {
         UpdateUI();

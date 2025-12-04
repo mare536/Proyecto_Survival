@@ -4,8 +4,8 @@ using TMPro;
 public class MesaMejoras : MonoBehaviour
 {
     [Header("UI de la Tienda")]
-    public GameObject panelTienda;       // El panel visual del menú (Canvas)
-    public TextMeshProUGUI textoAviso;   // Texto para decir "Compra exitosa" o "Falta dinero"
+    public GameObject panelTienda;       
+    public TextMeshProUGUI textoAviso;   
 
     [Header("Precios y Mejoras")]
     public int precioMunicion = 100;
@@ -16,64 +16,75 @@ public class MesaMejoras : MonoBehaviour
     private bool jugadorCerca = false;
     private bool tiendaAbierta = false;
 
-    // Referencias a LOS TRES scripts implicados
-    private Player scriptJugador; // Tu script de vida y puntos
-    private Weapon scriptArma;    // Tu script de armas
+    //Variables para guardar quién es el jugador y su arma
+    private Player scriptJugador;
+    private Weapon scriptArma;
 
     void Start()
     {
-        panelTienda.SetActive(false); // Empezamos con la tienda cerrada
+        //Al iniciar, aseguramos que el panel no moleste
+        if(panelTienda != null) 
+            panelTienda.SetActive(false);
     }
 
     void Update()
     {
-        // Si el jugador está en el trigger y pulsa E
+        //Solo funciona si el jugador está cerca Y hemos detectado sus scripts correctamente
         if (jugadorCerca && Input.GetKeyDown(KeyCode.E))
         {
-            AlternarTienda();
+            if (scriptJugador != null && scriptArma != null)
+            {
+                AlternarTienda();
+            }
+            else
+            {
+                Debug.LogError("ERROR: Estoy cerca, pero no encuentro el script 'Player' o 'Weapon' en tu personaje.");
+            }
         }
     }
 
     public void AlternarTienda()
     {
         tiendaAbierta = !tiendaAbierta;
-        panelTienda.SetActive(tiendaAbierta);
+        if(panelTienda != null) panelTienda.SetActive(tiendaAbierta);
 
         if (tiendaAbierta)
         {
-            // PAUSAR JUEGO
-            Time.timeScale = 0f; 
-            
-            // MOSTRAR RATÓN
+            Time.timeScale = 0f; //Pausa
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-
             if (textoAviso != null) textoAviso.text = "Bienvenido a la Armería";
         }
         else
         {
-            // REANUDAR JUEGO
-            Time.timeScale = 1f;
-            
-            // OCULTAR RATÓN
+            Time.timeScale = 1f; //Reanudar
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
     }
 
-    // --- BOTONES ---
-
+    //--- FUNCIÓN DEL BOTÓN COMPRAR BALAS ---
     public void Boton_ComprarBalas()
     {
-        // 1. Comprobamos si el jugador tiene puntos
+        //1. Seguridad: Si no hay scripts, salimos para que no explote el juego
+        if (scriptJugador == null || scriptArma == null)
+        {
+            Debug.LogError("Error Crítico: Las referencias al jugador se han perdido.");
+            return;
+        }
+
+        //2. Intentamos gastar el dinero del JUGADOR (Player.cs)
         if (scriptJugador.GastarPuntos(precioMunicion))
         {
-            // 2. Si pagó, le damos las balas
-            WeaponEntry arma = scriptArma.GetArmaActual();
-            arma.currentReserve += balasAComprar;
+            //3. Si pagó, accedemos al arma ACTUAL que tiene en la mano
+            WeaponEntry armaActual = scriptArma.GetArmaActual();
             
-            // 3. Actualizamos texto
+            //4. Le sumamos las balas a la reserva
+            armaActual.currentReserve += balasAComprar;
+            
+            //5. Actualizamos el texto de la pantalla del arma
             scriptArma.RefrescarUI(); 
+            
             if (textoAviso != null) textoAviso.text = "¡Munición comprada!";
         }
         else
@@ -84,12 +95,14 @@ public class MesaMejoras : MonoBehaviour
 
     public void Boton_MejorarDaño()
     {
+        if (scriptJugador == null || scriptArma == null) return;
+
         if (scriptJugador.GastarPuntos(precioMejora))
         {
-            WeaponEntry arma = scriptArma.GetArmaActual();
-            arma.damage += dañoAumentado;
+            WeaponEntry armaActual = scriptArma.GetArmaActual();
+            armaActual.damage += dañoAumentado;
 
-            if (textoAviso != null) textoAviso.text = "¡Arma mejorada! Daño: " + arma.damage;
+            if (textoAviso != null) textoAviso.text = "¡Arma mejorada! Daño: " + armaActual.damage;
         }
         else
         {
@@ -99,29 +112,45 @@ public class MesaMejoras : MonoBehaviour
     
     public void Boton_Salir()
     {
-        AlternarTienda(); // Cierra el menú y reanuda el juego
+        AlternarTienda(); 
     }
 
-    // --- DETECCIÓN DE COLISIÓN ---
-    
+    //--- DETECCIÓN "TODO TERRENO" DEL JUGADOR ---
     private void OnTriggerEnter(Collider other)
     {
-        // Importante: Tu jugador debe tener el Tag "Player"
-        if (other.CompareTag("Player"))
+        //Verificamos si es el jugador mirando el Tag o si tiene el script Player
+        if (other.CompareTag("Player") || other.GetComponent<Player>() || other.GetComponentInParent<Player>())
         {
             jugadorCerca = true;
-            // Buscamos automáticamente tus scripts en el objeto que entró (el jugador)
+
+            //BUSCAMOS EL SCRIPT 'PLAYER' (Vida y Puntos)
             scriptJugador = other.GetComponent<Player>();
+            if (scriptJugador == null)
+            {
+                scriptJugador = other.GetComponentInParent<Player>();
+            }
+            if (scriptJugador == null) {
+                scriptJugador = other.GetComponentInChildren<Player>();}
+
+            //BUSCAMOS EL SCRIPT 'WEAPON' (Armas) - Aquí es donde fallaba antes
             scriptArma = other.GetComponent<Weapon>();
+            if (scriptArma == null)
+            {
+              scriptArma = other.GetComponentInChildren<Weapon>();  
+            }  //Busca en la Cámara (Hijos)
+            if (scriptArma == null)
+            {
+                scriptArma = other.GetComponentInParent<Weapon>();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.GetComponentInParent<Player>())
         {
             jugadorCerca = false;
-            if (tiendaAbierta) AlternarTienda(); // Cerrar si te alejas
+            if (tiendaAbierta) AlternarTienda();
         }
     }
 }
