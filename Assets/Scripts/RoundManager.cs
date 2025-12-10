@@ -2,35 +2,64 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
-// RoundManager sencillo: calcula cuántos enemigos por spawner y lanza la ola.
-// La ronda empieza cuando no queda ningún EnemyHealth vivo en escena.
 public class RoundManager : MonoBehaviour
 {
-    public int rondaActual = 1;
+    [Header("Configuración")]
     [SerializeField] private float tiempoEntreRondas = 2f;
-    [SerializeField] private int spawnsBasePorSpawner = 10; // ejemplo: 10 en ronda 1
-    [SerializeField] private int incrementoPorRonda = 1;     // +1 por ronda
-    [SerializeField] private int maxPorSpawner = 100;        // tope por spawner (seguridad)
-    [SerializeField] private TextMeshProUGUI textoRonda;     // opcional: muestra ronda en UI
+    [SerializeField] private int spawnsBasePorSpawner = 10;
+    [SerializeField] private int incrementoPorRonda = 1;
+    [SerializeField] private int maxPorSpawner = 100;
+    
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI textoRonda;
 
-    // Multiplicador público que usan EnemyHealth/EnemyMovement
+    // Variable estática para que los enemigos sepan cuánto daño hacen
     public static float CurrentMultiplier { get; private set; } = 1f;
 
-    public int CurrentRound { get; private set; } = 0;
-
+    // --- MAGIA DE PROGRAMACIÓN ---
+    // Variable privada real
+    [SerializeField] private int _rondaActual = 0; 
     private bool esperandoRonda = false;
+
+    // Variable PÚBLICA que usa el GameManager.
+    // Cuando cambiamos esta variable, ejecuta el código de dentro (set).
+    public int rondaActual
+    {
+        get { return _rondaActual; }
+        set 
+        { 
+            _rondaActual = value;
+            ActualizarTodo(); // ¡Se actualiza solo al cargar!
+        }
+    }
 
     private void Start()
     {
-        if (textoRonda != null) textoRonda.text = "Ronda: " + CurrentRound;
+        // Al empezar, nos aseguramos de que todo esté sincronizado
+        ActualizarTodo();
         StartCoroutine(MonitorRondas());
+    }
+
+    // Esta función actualiza texto y dificultad basándose en el número de ronda
+    public void ActualizarTodo()
+    {
+        // 1. Actualizar Texto UI
+        if (textoRonda != null) 
+            textoRonda.text = "Ronda: " + _rondaActual;
+
+        // 2. Actualizar Dificultad (Multiplicador)
+        // Si es ronda 0 o 1, es normal. Si es más, sube 15% por ronda.
+        if (_rondaActual > 0)
+            CurrentMultiplier = 1f + (_rondaActual - 1) * 0.15f;
+        else
+            CurrentMultiplier = 1f;
     }
 
     private IEnumerator MonitorRondas()
     {
         while (true)
         {
-            // usar la nueva API rápida para comprobar si queda algún EnemyHealth
+            // Comprueba si no hay enemigos y no estamos ya esperando
             if (!esperandoRonda && Object.FindAnyObjectByType<EnemyHealth>() == null)
             {
                 StartCoroutine(StartNextRound());
@@ -42,22 +71,17 @@ public class RoundManager : MonoBehaviour
     private IEnumerator StartNextRound()
     {
         esperandoRonda = true;
-        CurrentRound++;
+        
+        // Subimos de ronda usando la propiedad pública para que se actualice el texto solo
+        rondaActual++; 
 
-        // calcular cuántos spawns por spawner: base + incremento*(ronda-1)
-        int spawnsThisRound = spawnsBasePorSpawner + (CurrentRound - 1) * incrementoPorRonda;
+        // Calcular enemigos para esta oleada
+        int spawnsThisRound = spawnsBasePorSpawner + (rondaActual - 1) * incrementoPorRonda;
         spawnsThisRound = Mathf.Min(spawnsThisRound, maxPorSpawner);
 
-        // actualizar multiplicador (ej. 15% por ronda)
-        CurrentMultiplier = 1f + (CurrentRound - 1) * 0.15f;
-
-        // actualizar UI
-        if (textoRonda != null) textoRonda.text = "Ronda: " + CurrentRound;
-
-        // pequeña espera antes de arrancar la ola
         yield return new WaitForSeconds(tiempoEntreRondas);
 
-        // pedir a todos los spawners que inicien su ola (usar la nueva API más rápida)
+        // Avisar a todos los spawners
         var spawners = Object.FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
         foreach (var s in spawners)
         {
