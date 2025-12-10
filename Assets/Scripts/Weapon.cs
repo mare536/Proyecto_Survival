@@ -43,19 +43,19 @@ public class Weapon : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textoInfo;
 
     [Header("Inventario")]
-    [SerializeField] private WeaponEntry[] weapons;
+    // CAMBIO 1: Ahora es PUBLIC para que el GameManager pueda guardar las balas de cada arma
+    public WeaponEntry[] weapons; 
     [SerializeField] private int startIndex = 0;
 
-    // HE BORRADO LA VARIABLE PUNTOS DE AQUÍ. EL ARMA NO NECESITA DINERO.
-
     // --- ESTADO ---
-    private int currentIdx = 0;
+    // CAMBIO 2: Ahora es PUBLIC para guardar qué arma tenías en la mano
+    public int currentIdx = 0; 
+    
     private float lastShotTime;
     private bool isReloading = false;
     private AudioSource audioSource;
     private GameObject currentModel;
 
-    // Propiedad útil
     public WeaponEntry CurrentWeapon => weapons[currentIdx];
 
     void Start()
@@ -68,6 +68,8 @@ public class Weapon : MonoBehaviour
         {
             foreach (var w in weapons)
             {
+                // Solo inicializamos munición si es la primera vez (no tras cargar partida)
+                // Pero para simplificar, dejaremos que el GameManager sobrescriba esto luego si cargamos partida
                 w.currentAmmo = w.magazineSize;
                 w.currentReserve = w.reserveAmmo;
             }
@@ -78,7 +80,6 @@ public class Weapon : MonoBehaviour
 
     void Update()
     {
-        // Si el juego está en pausa, no hacemos nada
         if (Time.timeScale == 0) return;
 
         if (weapons == null || weapons.Length == 0) return;
@@ -130,7 +131,8 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    private void EquipWeapon(int index)
+    // CAMBIO 3: Ahora es PUBLIC para que el GameManager pueda llamar a esta función al cargar partida
+    public void EquipWeapon(int index)
     {
         if (index == currentIdx && currentModel != null) return;
         currentIdx = index;
@@ -161,7 +163,6 @@ public class Weapon : MonoBehaviour
             }
             if (Physics.Raycast(camara.transform.position, direction, out RaycastHit hit, w.range))
             {
-                // Busca en el padre por si el collider está en un hijo
                 EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null) enemy.recibirDaño(w.damage);
                 
@@ -181,7 +182,6 @@ public class Weapon : MonoBehaviour
         if (textoInfo != null) textoInfo.text = "Recargando...";
         yield return new WaitForSeconds(w.reloadTime);
         
-        // Verificamos que sigamos con la misma arma
         if (weapons[currentIdx] == w)
         {
             int needed = w.magazineSize - w.currentAmmo;
@@ -201,15 +201,11 @@ public class Weapon : MonoBehaviour
         textoInfo.text = $"{w.weaponName} {w.currentAmmo}/{w.currentReserve}";
     }
 
-    // --- MÉTODOS PÚBLICOS PARA LA MESA ---
-    
-    // Método para que la mesa sepa qué arma mejorar
     public WeaponEntry GetArmaActual()
     {
         return weapons[currentIdx];
     }
     
-    // Método para actualizar texto tras comprar munición
     public void RefrescarUI()
     {
         UpdateUI();

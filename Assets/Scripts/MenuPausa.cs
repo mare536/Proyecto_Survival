@@ -47,8 +47,15 @@ public class MenuPausa : MonoBehaviour
     // CAMBIO: Ahora esta función carga el menú principal
     public void IrAlMenuPrincipal()
     {
-        // IMPORTANTE: Antes de cambiar de escena, hay que reactivar el tiempo
-        // Si no, el menú principal cargará congelado.
+        // 1. ANTES de irnos, guardamos la partida automáticamente
+        // GameManager ya sabe en qué slot estamos porque lo cargó al inicio
+        if (GameManager.instancia != null)
+        {
+            GameManager.instancia.GuardarJuego();
+            Debug.Log("Partida guardada automáticamente al salir.");
+        }
+
+        // 2. Reactivamos el tiempo y cargamos el menú
         Time.timeScale = 1f; 
         SceneManager.LoadScene("MainScene");
     }

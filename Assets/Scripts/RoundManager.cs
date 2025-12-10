@@ -6,6 +6,7 @@ using TMPro;
 // La ronda empieza cuando no queda ningún EnemyHealth vivo en escena.
 public class RoundManager : MonoBehaviour
 {
+    public int rondaActual = 1;
     [SerializeField] private float tiempoEntreRondas = 2f;
     [SerializeField] private int spawnsBasePorSpawner = 10; // ejemplo: 10 en ronda 1
     [SerializeField] private int incrementoPorRonda = 1;     // +1 por ronda

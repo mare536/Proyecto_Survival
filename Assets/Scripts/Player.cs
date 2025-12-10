@@ -6,8 +6,8 @@ using TMPro; // Para mostrar texto en la UI
 public class Player : MonoBehaviour
 {
     public bool estaVivo = false;
-    [SerializeField] private float vitalidad = 100f;
-    [SerializeField] private int puntos = 0;
+    public float vitalidad = 100f;
+    public int puntos   = 0;
     [SerializeField] private TextMeshProUGUI textoVitalidad;
     [SerializeField] private TextMeshProUGUI textoPuntos;
 
