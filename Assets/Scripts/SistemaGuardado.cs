@@ -1,39 +1,37 @@
 using UnityEngine;
 using System.IO;
 
-public static class SistemaGuardado
+public static class SistemaGuardado 
 {
-    // Devuelve la ruta: .../PersistentData/save_slot_0.json
-    private static string GetRuta(int slot)
-    {
-        return Path.Combine(Application.persistentDataPath, $"partida_slot_{slot}.json");
+    public static bool ExistePartida(int slot){
+        string ruta = Application.persistentDataPath + "/datosJuego_" + slot + ".json";
+        return File.Exists(ruta);
     }
-
     public static void GuardarPartida(DatosJuego datos, int slot)
     {
-        string json = JsonUtility.ToJson(datos, true); // 'true' para que el texto sea legible
-        File.WriteAllText(GetRuta(slot), json);
-        Debug.Log($"Partida guardada en Slot {slot}");
+        string ruta = Application.persistentDataPath + "/datosJuego_" + slot + ".json";
+        string json = JsonUtility.ToJson(datos);
+        File.WriteAllText(ruta, json);
     }
 
     public static DatosJuego CargarPartida(int slot)
     {
-        string ruta = GetRuta(slot);
+        string ruta = Application.persistentDataPath + "/datosJuego_" + slot + ".json";
         if (File.Exists(ruta))
         {
             string json = File.ReadAllText(ruta);
-            DatosJuego datos = JsonUtility.FromJson<DatosJuego>(json);
-            return datos;
+            return JsonUtility.FromJson<DatosJuego>(json);
         }
-        else
-        {
-            Debug.LogWarning($"No existe partida en el Slot {slot}");
-            return null;
-        }
+        return null;
     }
 
-    public static bool ExistePartida(int slot)
+    public static void BorrarPartida(int slot)
     {
-        return File.Exists(GetRuta(slot));
+        string ruta = Application.persistentDataPath + "/datosJuego_" + slot + ".json";
+        if (File.Exists(ruta))
+        {
+            File.Delete(ruta);
+            Debug.Log("Datos borrados del slot " + slot);
+        }
     }
 }

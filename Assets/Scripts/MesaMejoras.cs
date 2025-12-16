@@ -1,6 +1,6 @@
 using UnityEngine;
 using TMPro; 
-using UnityEngine.UI; // <--- NECESARIO PARA TOCAR LOS BOTONES
+using UnityEngine.UI; 
 
 public class MesaMejoras : MonoBehaviour
 {
@@ -9,16 +9,18 @@ public class MesaMejoras : MonoBehaviour
     public TextMeshProUGUI textoAviso;   
 
     [Header("Referencias a los Botones REALES")]
-    // Arrastra aquí los botones del Canvas
     public Button btnComprarBalas;
     public Button btnMejorarDano;
+    public Button btnCurar; 
     public Button btnSalir;
 
     [Header("Precios y Mejoras")]
     public int precioMunicion = 100;
     public int precioMejora = 500;
+    public int precioCura = 250;     
     public int balasAComprar = 30;
     public float dañoAumentado = 5f;
+    public float cantidadCura = 50f; 
 
     private bool jugadorCerca = false;
     private bool tiendaAbierta = false;
@@ -36,7 +38,6 @@ public class MesaMejoras : MonoBehaviour
     {
         if (jugadorCerca && Input.GetKeyDown(KeyCode.E))
         {
-            // Solo abrimos si tenemos las referencias
             if (scriptJugador != null && scriptArma != null)
             {
                 AlternarTienda();
@@ -55,10 +56,7 @@ public class MesaMejoras : MonoBehaviour
 
         if (tiendaAbierta)
         {
-            // --- AQUI ESTA LA MAGIA ---
-            // Le decimos a los botones que olviden a la mesa anterior y nos escuchen a nosotros
             ConfigurarBotones();
-
             Time.timeScale = 0f; 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -72,13 +70,12 @@ public class MesaMejoras : MonoBehaviour
         }
     }
 
-    // Función nueva para conectar los cables dinámicamente
     void ConfigurarBotones()
     {
         if(btnComprarBalas != null)
         {
-            btnComprarBalas.onClick.RemoveAllListeners(); // Borrar conexiones viejas
-            btnComprarBalas.onClick.AddListener(Boton_ComprarBalas); // Conectar a ESTA mesa
+            btnComprarBalas.onClick.RemoveAllListeners();
+            btnComprarBalas.onClick.AddListener(Boton_ComprarBalas);
         }
 
         if(btnMejorarDano != null)
@@ -92,9 +89,15 @@ public class MesaMejoras : MonoBehaviour
             btnSalir.onClick.RemoveAllListeners();
             btnSalir.onClick.AddListener(Boton_Salir);
         }
+
+        if(btnCurar != null)
+        {
+            btnCurar.onClick.RemoveAllListeners();
+            btnCurar.onClick.AddListener(Boton_Curar);
+        }
     }
 
-    // --- FUNCIONES LÓGICAS --- (Igual que antes)
+    // --- FUNCIONES LÓGICAS ---
 
     public void Boton_ComprarBalas()
     {
@@ -128,6 +131,28 @@ public class MesaMejoras : MonoBehaviour
             if (textoAviso) textoAviso.text = "¡No tienes puntos suficientes!";
         }
     }
+
+    public void Boton_Curar()
+    {
+        if (scriptJugador == null) return;
+
+        // Comprobar si ya tiene la vida llena
+        if (scriptJugador.vitalidad >= 100f)
+        {
+            if (textoAviso) textoAviso.text = "¡Tu salud ya está al máximo!";
+            return;
+        }
+
+        if (scriptJugador.GastarPuntos(precioCura))
+        {
+            scriptJugador.Curar(cantidadCura);
+            if (textoAviso) textoAviso.text = "¡Salud recuperada!";
+        }
+        else
+        {
+            if (textoAviso) textoAviso.text = "¡No tienes puntos suficientes!";
+        }
+    }
     
     public void Boton_Salir()
     {
@@ -135,7 +160,6 @@ public class MesaMejoras : MonoBehaviour
     }
 
     // --- DETECCION ---
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") || other.GetComponent<Player>() || other.GetComponentInParent<Player>())

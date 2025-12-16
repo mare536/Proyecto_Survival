@@ -26,15 +26,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9010612053373607407, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.245167
+      value: 16.136623
       objectReference: {fileID: 0}
     - target: {fileID: 9010612053373607407, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.00020513979
+      value: 0.000000725679
       objectReference: {fileID: 0}
     - target: {fileID: 9010612053373607407, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 19.476532
+      value: 22.253025
       objectReference: {fileID: 0}
     - target: {fileID: 9010612053373607407, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
       propertyPath: m_LocalRotation.w
@@ -71,6 +71,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9010612053373108687, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
       insertIndex: -1
       addedObject: {fileID: 248531168408923548}
+    - targetCorrespondingSourceObject: {fileID: 9010612053373108687, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -439970648014743498}
   m_SourcePrefab: {fileID: 100100000, guid: 0c13b9c31fd059b468b2f1759c412e61, type: 3}
 --- !u!1 &1508892983358415112 stripped
 GameObject:
@@ -98,3 +101,24 @@ MonoBehaviour:
   precioMejora: 500
   balasAComprar: 30
   "da\xF1oAumentado": 5
+--- !u!65 &-439970648014743498
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508892983358415112}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3, y: 3, z: 3}
+  m_Center: {x: 0.036354363, y: 1.2709731, z: -0.016941369}

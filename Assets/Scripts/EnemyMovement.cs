@@ -76,7 +76,7 @@ public class EnemyMovement : MonoBehaviour
                     if (sonidoAtaque != null && audioSource != null)
                         audioSource.PlayOneShot(sonidoAtaque, volumenSonido);
 
-                    jugador.recibirDaño(dañoAlJugador);
+                    jugador.RecibirDano(dañoAlJugador);
                     ultimoAtaque = Time.time;
                 }
             }

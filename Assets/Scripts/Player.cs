@@ -39,35 +39,55 @@ public class Player : MonoBehaviour
         if (textoPuntos != null)
             textoPuntos.text = "Puntos: " + puntos;
     }
-    public void recibirDaño(float cantidad)
-    {
-        vitalidad -= cantidad;
-        if (vitalidad < 0) vitalidad = 0;
-        if (textoVitalidad != null)
-            textoVitalidad.text = "Vitalidad: " + vitalidad;
 
-        if (vitalidad <= 0 && estaVivo)
+    public void RecibirDano(float cantidad){
+        vitalidad -= cantidad;
+        textoVitalidad.text = "Vitalidad: " + vitalidad;
+        
+        // Actualizar UI aquí si es necesario
+        
+        if (vitalidad <= 0)
         {
-            estaVivo = false;
-            Debug.Log("Jugador muerto.");
+            vitalidad = 0;
+            estaVivo = false; // El jugador ha muerto
+            SistemaGuardado.BorrarPartida(1); 
+
+
+            if (GameManager.instancia != null)
+            {
+                GameManager.instancia.TriggerGameOver();
+            }
         }
     }
-    public bool GastarPuntos(int cantidad)
+
+    public void Curar(float cantidad)
     {
+        vitalidad += cantidad;
+        
+        // Tope máximo de 100 de vida
+        if (vitalidad > 100f) 
+        {
+            vitalidad = 100f;
+        }
+
+        // Actualizamos el texto de la pantalla
+        if (textoVitalidad != null)
+            textoVitalidad.text = "Vitalidad: " + vitalidad;
+            
+        Debug.Log("Jugador curado. Vida actual: " + vitalidad);
+    }
+
+
+    public bool GastarPuntos(int cantidad){
         if (puntos >= cantidad)
         {
             puntos -= cantidad;
-            
-            // Actualizamos la UI inmediatamente
-            if (textoPuntos != null)
-                textoPuntos.text = "Puntos: " + puntos;
-                
-            return true; // Compra realizada
+            return true; // Devuelve VERDADERO: La compra se realizó
         }
         else
         {
             Debug.Log("No tienes suficientes puntos.");
-            return false; // No hay dinero
+            return false; // Devuelve FALSO: No se pudo comprar
         }
     }
 }

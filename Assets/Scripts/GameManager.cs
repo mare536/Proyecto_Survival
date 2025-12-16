@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections; // Necesario para la Corrutina
+using System.Collections; 
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
@@ -11,7 +11,11 @@ public class GameManager : MonoBehaviour
     public Weapon scriptArmas;
     public RoundManager scriptRondas;
 
+    [Header("UI Game Over")]
+    public GameObject panelGameOver; 
+
     private int slotActual = -1;
+    private bool juegoTerminado = false; // <--- CAMBIO IMPORTANTE: Variable para bloquear guardado si morimos
 
     void Awake()
     {
@@ -21,30 +25,34 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Recuperamos el slot que elegimos en el menú principal
         int slotACargar = PlayerPrefs.GetInt("SlotSeleccionado", -1);
         
         if (slotACargar != -1)
         {
             slotActual = slotACargar;
             Debug.Log($"⏳ Esperando para cargar Slot {slotActual}...");
-            // AQUÍ ESTÁ EL TRUCO: Usamos una corrutina para esperar un frame
             StartCoroutine(ProcesoCarga(slotActual));
             
-            // Reseteamos el PlayerPrefs para que no cargue siempre al reiniciar la escena normal
             PlayerPrefs.SetInt("SlotSeleccionado", -1); 
         }
     }
 
-    // Esta rutina espera a que Weapon.cs y Player.cs terminen sus Start()
     IEnumerator ProcesoCarga(int slot)
     {
-        yield return new WaitForEndOfFrame(); // Espera al final del primer fotograma
+        yield return new WaitForEndOfFrame(); 
         CargarJuego(slot);
     }
 
     public void GuardarJuego()
     {
+        // <--- CAMBIO IMPORTANTE: Si el juego terminó, PROHIBIDO GUARDAR.
+        // Esto evita que se cree un archivo de guardado con el jugador muerto.
+        if (juegoTerminado) 
+        {
+            Debug.LogWarning("❌ Intento de guardar bloqueado porque el jugador ha muerto.");
+            return; 
+        }
+
         if (slotActual == -1) slotActual = 1;
 
         DatosJuego datos = new DatosJuego();
@@ -82,10 +90,22 @@ public class GameManager : MonoBehaviour
     public void CargarJuego(int slot)
     {
         DatosJuego datos = SistemaGuardado.CargarPartida(slot);
+        
+        // 1. Si no hay datos, es partida nueva.
         if (datos == null)
         {
-            Debug.LogWarning("No se encontró archivo de guardado.");
+            Debug.LogWarning("No se encontró archivo de guardado. Iniciando Partida Nueva.");
             return;
+        }
+
+        // <--- CAMBIO IMPORTANTE: FILTRO ANTI-MUERTE
+        // Si cargamos una partida donde la vida es 0, significa que el borrado falló antes.
+        // Lo forzamos ahora y NO aplicamos los datos (para que empiece como nuevo).
+        if (datos.vidaJugador <= 0)
+        {
+            Debug.LogError("☠️ Se detectó una partida guardada con el jugador muerto. Eliminando y reiniciando.");
+            SistemaGuardado.BorrarPartida(slot); // Asegurar borrado
+            return; // Salimos de la función para NO cargar los stats de muerte
         }
 
         Debug.Log("📂 CARGANDO DATOS...");
@@ -96,26 +116,21 @@ public class GameManager : MonoBehaviour
             scriptJugador.vitalidad = datos.vidaJugador;
             scriptJugador.puntos = datos.puntosJugador;
             
-            // Actualizar la UI del jugador manualmente para que se vea el cambio
-            // Asegúrate de tener métodos públicos en Player para esto o llama a recibirDaño(0) como truco
-            scriptJugador.agregarPuntos(0); // Truco para refrescar texto puntos
-            scriptJugador.recibirDaño(0);   // Truco para refrescar texto vida
+            scriptJugador.agregarPuntos(0); 
+            scriptJugador.RecibirDano(0);   
 
-            // Mover jugador (apagando CharacterController momentáneamente si existe)
             CharacterController cc = scriptJugador.GetComponent<CharacterController>();
             if(cc != null) cc.enabled = false;
             scriptJugador.transform.position = new Vector3(datos.posicionJugador[0], datos.posicionJugador[1], datos.posicionJugador[2]);
             if(cc != null) cc.enabled = true;
 
-            Debug.Log($"✅ Jugador cargado: Vida {scriptJugador.vitalidad}, Puntos {scriptJugador.puntos}");
+            Debug.Log($"✅ Jugador cargado: Vida {scriptJugador.vitalidad}");
         }
 
         // 2. Cargar Rondas
         if(scriptRondas != null)
         {
             scriptRondas.rondaActual = datos.rondaActual;
-            // Si tienes un método para actualizar texto de ronda, llámalo aquí
-            Debug.Log($"✅ Ronda cargada: {scriptRondas.rondaActual}");
         }
 
         // 3. Cargar Armas
@@ -133,10 +148,28 @@ public class GameManager : MonoBehaviour
                     armaJuego.damage = armaDatos.dañoActual;
                 }
             }
-            // Equipar el arma guardada y refrescar la UI del arma
             scriptArmas.EquipWeapon(datos.indiceArmaEquipada);
             scriptArmas.RefrescarUI(); 
-            Debug.Log("✅ Armas cargadas y munición establecida.");
         }
+    }
+
+    public void TriggerGameOver()
+    {
+        if (juegoTerminado) return; // Evitar que se llame dos veces
+
+        Debug.Log("☠️ GAME OVER - Eliminando partida...");
+        
+        juegoTerminado = true; // <--- CAMBIO IMPORTANTE: Marcamos el juego como terminado
+
+        // 1. Borrar el archivo de guardado de este slot (Permadeath)
+        SistemaGuardado.BorrarPartida(slotActual);
+
+        // 2. Mostrar pantalla de derrota
+        if(panelGameOver != null) panelGameOver.SetActive(true);
+
+        // 3. Congelar el juego y soltar el ratón
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
