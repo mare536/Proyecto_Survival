@@ -1,28 +1,35 @@
 using UnityEngine;
 using System.Collections; 
 using System.Collections.Generic;
-
+// Gestor del juego: guardado, carga y fin de partida
 public class GameManager : MonoBehaviour
 {
+    // Singleton de GameManager
     public static GameManager instancia;
 
     [Header("Referencias")]
+    // Referencias a componentes (jugador, armas, rondas)
     public Player scriptJugador;
     public Weapon scriptArmas;
     public RoundManager scriptRondas;
 
     [Header("UI Game Over")]
+    // Panel que se muestra al perder
     public GameObject panelGameOver; 
 
+    // Slot de guardado actual
     private int slotActual = -1;
-    private bool juegoTerminado = false; //VariableBloquearGuardado
+    // Indica si el juego terminó (bloquea guardado)
+    private bool juegoTerminado = false;
 
+    // Configura el singleton
     void Awake()
     {
         if (instancia == null) instancia = this;
         else Destroy(gameObject);
     }
 
+    // Comprueba si hay un slot para cargar al iniciar
     void Start()
     {
         int slotACargar = PlayerPrefs.GetInt("SlotSeleccionado", -1);
@@ -37,15 +44,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Espera un frame y luego llama a cargar el slot
     IEnumerator ProcesoCarga(int slot)
     {
         yield return new WaitForEndOfFrame(); 
         CargarJuego(slot);
     }
 
+    // Guarda el estado actual en el slot
     public void GuardarJuego()
     {
-        //ProhibirGuardarSiJuegoTerminado
+        // No guardar si el juego terminó
         if (juegoTerminado) 
         {
             Debug.LogWarning("❌ Intento de guardar bloqueado porque el jugador ha muerto.");
@@ -58,7 +67,7 @@ public class GameManager : MonoBehaviour
 
         if (scriptJugador != null)
         {
-            //GuardarDatosJugador
+            // Guardar datos del jugador
             datos.vidaJugador = scriptJugador.vitalidad;
             datos.puntosJugador = scriptJugador.puntos;
             datos.posicionJugador = new float[] { 
@@ -68,10 +77,12 @@ public class GameManager : MonoBehaviour
             };
         }
 
+        // Guardar ronda actual
         if (scriptRondas != null) datos.rondaActual = scriptRondas.rondaActual;
 
         if (scriptArmas != null)
         {
+            // Guardar datos de cada arma
             datos.indiceArmaEquipada = scriptArmas.currentIdx;
             foreach (var arma in scriptArmas.weapons)
             {
@@ -87,19 +98,19 @@ public class GameManager : MonoBehaviour
         SistemaGuardado.GuardarPartida(datos, slotActual);
     }
 
+    // Carga datos desde un slot de guardado
     public void CargarJuego(int slot)
     {
         DatosJuego datos = SistemaGuardado.CargarPartida(slot);
         
-        //ComprobarDatosCargados
+        // Si no hay datos, iniciar partida nueva
         if (datos == null)
         {
             Debug.LogWarning("No se encontró archivo de guardado. Iniciando Partida Nueva.");
             return;
         }
 
-        //FiltroAntiMuerte
-        //Si la vida es 0, no cargamos los datos
+        // Si la vida cargada es 0, borrar el guardado (evitar cargar muerte)
         if (datos.vidaJugador <= 0)
         {
             Debug.LogError("☠️ Se detectó una partida guardada con el jugador muerto. Eliminando y reiniciando.");
@@ -109,7 +120,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("📂 CARGANDO DATOS...");
 
-        //CargarJugador
+        // Restaurar vida, puntos y posición del jugador
         if (scriptJugador != null)
         {
             scriptJugador.vitalidad = datos.vidaJugador;
@@ -126,13 +137,13 @@ public class GameManager : MonoBehaviour
             Debug.Log($"✅ Jugador cargado: Vida {scriptJugador.vitalidad}");
         }
 
-        //CargarRondas
+        // Restaurar estado de rondas
         if(scriptRondas != null)
         {
             scriptRondas.rondaActual = datos.rondaActual;
         }
 
-        //CargarArmas
+        // Restaurar armas y munición
         if (scriptArmas != null)
         {
             for (int i = 0; i < datos.armas.Count; i++)
@@ -152,6 +163,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Acciones al producirse Game Over: borrar guardado y mostrar UI
     public void TriggerGameOver()
     {
         if (juegoTerminado) return; //EvitarDuplicado

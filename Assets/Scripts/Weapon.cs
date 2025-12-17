@@ -1,12 +1,13 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
-
+//Clase sencilla que almacena los datos de cada arma
 [System.Serializable]
 public class WeaponEntry
 {
+    //Nombre del arma
     public string weaponName = "Arma"; 
-    
+    //Combate: daño, alcance, cadencia, etc.
     [Header("Combate")]
     public float damage = 25f;
     public float range = 50f;
@@ -14,39 +15,41 @@ public class WeaponEntry
     public bool automatic = false;
     public int pellets = 1;
     public float spread = 0f;
-
+    //Munición: tamaño de cargador y reserva
     [Header("Munición")]
     public int magazineSize = 12;
     public int reserveAmmo = 36;
     public float reloadTime = 1.5f;
-
+    //Visuales: sonidos y efectos
     [Header("Visuales")]
     public AudioClip shotSound;
     public GameObject impactPrefab;
     public GameObject modelPrefab;
     public Vector3 modelLocalPosition = Vector3.zero;
-
-    //Runtime
+    //Valores en tiempo de ejecución (munición actual)
+    //untime
     [HideInInspector] public int currentAmmo;
     [HideInInspector] public int currentReserve;
 }
 
+//Controla las armas: disparo, recarga y cambio
 [RequireComponent(typeof(AudioSource))]
 public class Weapon : MonoBehaviour
 {
-    //---Configuracion---
+    //--Configuracion---
+    //Referencias a objetos (cámara, soporte y HUD)
     [Header("Referencias")]
     [SerializeField] private Camera camara;
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private TextMeshProUGUI textoInfo;
 
     [Header("Inventario")]
-    //Cambio1 publico para guardar balas GameManager
+    //Armas que puede usar el jugador
     public WeaponEntry[] weapons; 
     [SerializeField] private int startIndex = 0;
 
-    //---Estado---
-    //publico para guardar indice arma en GameManager
+    //--Estado---
+    //Índice del arma equipada
     public int currentIdx = 0; 
     
     private float lastShotTime;
@@ -56,7 +59,7 @@ public class Weapon : MonoBehaviour
 
     public WeaponEntry CurrentWeapon => weapons[currentIdx];
 
-    //Inicializar Armas y Municion
+    //Inicializa armas y munición al empezar
     void Start()
     {
         if (camara == null) camara = Camera.main;
@@ -67,7 +70,7 @@ public class Weapon : MonoBehaviour
         {
             foreach (var w in weapons)
             {
-                //Inicializar municion
+                //nicializar municion
                 w.currentAmmo = w.magazineSize;
                 w.currentReserve = w.reserveAmmo;
             }
@@ -76,7 +79,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    //Actualizar Entrada y Estado
+    //Lee input y actualiza estado cada frame
     void Update()
     {
         if (Time.timeScale == 0) return;
@@ -88,7 +91,7 @@ public class Weapon : MonoBehaviour
         HandleShooting();
     }
 
-    //Cambiar Arma por Numero o Scroll
+    //Cambiar arma con teclas 1..n o rueda del ratón
     private void HandleWeaponSwitch()
     {
         for (int i = 0; i < weapons.Length; i++)
@@ -99,7 +102,7 @@ public class Weapon : MonoBehaviour
         else if (scroll < 0f) EquipWeapon((currentIdx - 1 + weapons.Length) % weapons.Length);
     }
 
-    //Iniciar Recarga Si Se Solicita
+    //Comprobar si se pulsa R para recargar
     private void HandleReload()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -110,7 +113,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    //Gestionar Disparo Segun Tipo y Cadencia
+    //Gestiona cuándo se puede disparar según tipo y cadencia
     private void HandleShooting()
     {
         if (isReloading) return;
@@ -130,7 +133,7 @@ public class Weapon : MonoBehaviour
         UpdateUI();
     }
 
-    //Equipar Arma y Crear Modelo
+    //Equipa el arma y crea su modelo visual
     public void EquipWeapon(int index)
     {
         if (index == currentIdx && currentModel != null) return;
@@ -146,7 +149,7 @@ public class Weapon : MonoBehaviour
         UpdateUI();
     }
 
-    //Realizar Raycasts y hacer daño
+    //Lanza raycasts por cada pellet y aplica daño/impactos
     private void PerformShoot()
     {
         WeaponEntry w = CurrentWeapon;
@@ -175,7 +178,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    //Recarga
+    //Rutina de recarga (espera y mueve balas de reserva)
     private IEnumerator ReloadRoutine()
     {
         isReloading = true;
@@ -195,20 +198,23 @@ public class Weapon : MonoBehaviour
         UpdateUI(); 
     }
 
+    //Actualiza el texto de munición en pantalla
     public void UpdateUI()
     {
-        //Actualizar Texto de Municion
+        //Texto de munición
         if (textoInfo == null) return;
         WeaponEntry w = CurrentWeapon;
         textoInfo.text = $"{w.weaponName} {w.currentAmmo}/{w.currentReserve}";
     }
 
+    //Devuelve la entrada del arma actual
     public WeaponEntry GetArmaActual()
     {
-        //Obtener Entrada Arma Actual
+        //Obtener entrada del arma actual
         return weapons[currentIdx];
     }
     
+    //Fuerza la actualización de la UI
     public void RefrescarUI()
     {
         UpdateUI();

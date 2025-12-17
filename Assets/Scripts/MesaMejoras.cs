@@ -72,28 +72,20 @@ public class MesaMejoras : MonoBehaviour
         }
     }
 
-    void ConfigurarBotones()
-    {
-        if(btnComprarBalas != null)
-        {
+    void ConfigurarBotones(){
+        if(btnComprarBalas != null){
             btnComprarBalas.onClick.RemoveAllListeners();
             btnComprarBalas.onClick.AddListener(Boton_ComprarBalas);
         }
-
-        if(btnMejorarDano != null)
-        {
+        if(btnMejorarDano != null){
             btnMejorarDano.onClick.RemoveAllListeners();
             btnMejorarDano.onClick.AddListener(Boton_MejorarDaño);
         }
-
-        if(btnSalir != null)
-        {
+        if(btnSalir != null){
             btnSalir.onClick.RemoveAllListeners();
             btnSalir.onClick.AddListener(Boton_Salir);
         }
-
-        if(btnCurar != null)
-        {
+        if(btnCurar != null){
             btnCurar.onClick.RemoveAllListeners();
             btnCurar.onClick.AddListener(Boton_Curar);
         }
