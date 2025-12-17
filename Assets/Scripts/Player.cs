@@ -16,13 +16,14 @@ public class Player : MonoBehaviour
     public void Start()
     {
         estaVivo = true;
-        // Inicializar la UI al inicio
+        //InicializarUI
         textoVitalidad.text = "Vitalidad: " + vitalidad;
         textoPuntos.text = "Puntos: " + puntos;
     }
 
     public void Update()
     {
+        //ComprobarVida
         if (estaVivo==true)
         {
             if (vitalidad <= 0)
@@ -35,23 +36,22 @@ public class Player : MonoBehaviour
 
     public void agregarPuntos(int cantidad)
     {
+        //AgregarPuntosYActualizarUI
         puntos += cantidad;
         if (textoPuntos != null)
             textoPuntos.text = "Puntos: " + puntos;
     }
 
     public void RecibirDano(float cantidad){
+        //RestarVida
         vitalidad -= cantidad;
         textoVitalidad.text = "Vitalidad: " + vitalidad;
-        
-        // Actualizar UI aquí si es necesario
-        
+
         if (vitalidad <= 0)
         {
             vitalidad = 0;
-            estaVivo = false; // El jugador ha muerto
-            SistemaGuardado.BorrarPartida(1); 
-
+            estaVivo = false; //JugadorMuerto
+            SistemaGuardado.BorrarPartida(1);
 
             if (GameManager.instancia != null)
             {
@@ -62,32 +62,34 @@ public class Player : MonoBehaviour
 
     public void Curar(float cantidad)
     {
+        //CurarJugador
         vitalidad += cantidad;
-        
-        // Tope máximo de 100 de vida
+
+        //LimiteVida100
         if (vitalidad > 100f) 
         {
             vitalidad = 100f;
         }
 
-        // Actualizamos el texto de la pantalla
+        //ActualizarVidaUI
         if (textoVitalidad != null)
             textoVitalidad.text = "Vitalidad: " + vitalidad;
-            
+
         Debug.Log("Jugador curado. Vida actual: " + vitalidad);
     }
 
 
     public bool GastarPuntos(int cantidad){
+        //IntentarGastarPuntos
         if (puntos >= cantidad)
         {
             puntos -= cantidad;
-            return true; // Devuelve VERDADERO: La compra se realizó
+            return true; //CompraRealizada
         }
         else
         {
             Debug.Log("No tienes suficientes puntos.");
-            return false; // Devuelve FALSO: No se pudo comprar
+            return false; //CompraFallida
         }
     }
 }

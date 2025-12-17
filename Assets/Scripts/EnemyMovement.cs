@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// Movimiento simple del enemigo: sigue al jugador y aplica daño al llegar
+//MovimientoSimpleEnemigo
 public class EnemyMovement : MonoBehaviour
 {
     [Tooltip("Si no se asigna, busca el GameObject con tag 'Player'")]
@@ -13,20 +13,20 @@ public class EnemyMovement : MonoBehaviour
     private float ultimoAtaque = -999f;
     [SerializeField] private float dañoAlJugador = 10f;
 
-    // --- Sonidos del zombie ---
+    //---SonidosZombie---
     [Header("Sonidos")]
-    [SerializeField] private AudioClip sonidoGruñido;      // sonido ocasional (idle)
-    [SerializeField] private AudioClip sonidoAtaque;       // sonido al atacar
+    [SerializeField] private AudioClip sonidoGruñido;      //SonidoIdle
+    [SerializeField] private AudioClip sonidoAtaque;       //SonidoAtaque
     [SerializeField] private float volumenSonido = 1f;
-    [SerializeField] private float tiempoGruñidoMin = 3f;  // intervalo aleatorio mínimo entre gruñidos
-    [SerializeField] private float tiempoGruñidoMax = 8f;  // intervalo aleatorio máximo
+    [SerializeField] private float tiempoGruñidoMin = 3f;  //TiempoGruñidoMin
+    [SerializeField] private float tiempoGruñidoMax = 8f;  //TiempoGruñidoMax
     private AudioSource audioSource;
 
     private void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
 
-        // escalar daño según la ronda actual
+        //EscalarDanoSegunRonda
         dañoAlJugador *= RoundManager.CurrentMultiplier;
 
         // Si no hay referencia al player en el Inspector, buscar por tag
@@ -36,32 +36,32 @@ public class EnemyMovement : MonoBehaviour
             if (go != null) player = go.transform;
         }
 
-        // Preparar AudioSource (se crea si no existe)
+        //PrepararAudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1f; // 3D sound 
 
-        // Lanzar coroutine de sonidos idle si hay clip asignado
+        //IniciarCoroutineSonidos
         if (sonidoGruñido != null)
             StartCoroutine(IdleGroanLoop());
     }
 
     void Update()
     {
-        // Requerimos player y agente válidos
+        //ComprobarPlayerYAgente
         if (player == null || navMeshAgent == null) return;
 
-        // Proteger accesos al agente: solo usar si está sobre la NavMesh y habilitado
+        //ProtegerAccesoAgente
         if (!navMeshAgent.isOnNavMesh || !navMeshAgent.enabled) return;
 
-        // Seguir al jugador
+        //SeguirJugador
         navMeshAgent.SetDestination(player.position);
 
-        // Esperar a que el path esté listo antes de consultar remainingDistance
+        //EsperarPathListo
         if (navMeshAgent.pathPending) return;
 
-        // Comprobar distancia y atacar si corresponde
+        //ComprobarDistanciaYAtacar
         if (navMeshAgent.remainingDistance <= rangoAtaque)
         {
             if (Time.time - ultimoAtaque >= cooldownAtaque)
@@ -72,7 +72,7 @@ public class EnemyMovement : MonoBehaviour
 
                 if (jugador != null && jugador.estaVivo)
                 {
-                    // reproducir sonido de ataque si existe
+                    //ReproducirSonidoAtaque
                     if (sonidoAtaque != null && audioSource != null)
                         audioSource.PlayOneShot(sonidoAtaque, volumenSonido);
 
@@ -83,7 +83,7 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // Coroutine simple que reproduce gruñidos ocasionales para dar vida al zombie
+    //CoroutineGruñidos
     private System.Collections.IEnumerator IdleGroanLoop()
     {
         while (true)

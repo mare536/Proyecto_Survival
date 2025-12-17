@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject panelGameOver; 
 
     private int slotActual = -1;
-    private bool juegoTerminado = false; // <--- CAMBIO IMPORTANTE: Variable para bloquear guardado si morimos
+    private bool juegoTerminado = false; //VariableBloquearGuardado
 
     void Awake()
     {
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
         if (slotACargar != -1)
         {
             slotActual = slotACargar;
-            Debug.Log($"⏳ Esperando para cargar Slot {slotActual}...");
+                Debug.Log($"⏳ Esperando para cargar Slot {slotActual}...");
             StartCoroutine(ProcesoCarga(slotActual));
             
             PlayerPrefs.SetInt("SlotSeleccionado", -1); 
@@ -45,8 +45,7 @@ public class GameManager : MonoBehaviour
 
     public void GuardarJuego()
     {
-        // <--- CAMBIO IMPORTANTE: Si el juego terminó, PROHIBIDO GUARDAR.
-        // Esto evita que se cree un archivo de guardado con el jugador muerto.
+        //ProhibirGuardarSiJuegoTerminado
         if (juegoTerminado) 
         {
             Debug.LogWarning("❌ Intento de guardar bloqueado porque el jugador ha muerto.");
@@ -59,6 +58,7 @@ public class GameManager : MonoBehaviour
 
         if (scriptJugador != null)
         {
+            //GuardarDatosJugador
             datos.vidaJugador = scriptJugador.vitalidad;
             datos.puntosJugador = scriptJugador.puntos;
             datos.posicionJugador = new float[] { 
@@ -91,26 +91,25 @@ public class GameManager : MonoBehaviour
     {
         DatosJuego datos = SistemaGuardado.CargarPartida(slot);
         
-        // 1. Si no hay datos, es partida nueva.
+        //ComprobarDatosCargados
         if (datos == null)
         {
             Debug.LogWarning("No se encontró archivo de guardado. Iniciando Partida Nueva.");
             return;
         }
 
-        // <--- CAMBIO IMPORTANTE: FILTRO ANTI-MUERTE
-        // Si cargamos una partida donde la vida es 0, significa que el borrado falló antes.
-        // Lo forzamos ahora y NO aplicamos los datos (para que empiece como nuevo).
+        //FiltroAntiMuerte
+        //Si la vida es 0, no cargamos los datos
         if (datos.vidaJugador <= 0)
         {
             Debug.LogError("☠️ Se detectó una partida guardada con el jugador muerto. Eliminando y reiniciando.");
-            SistemaGuardado.BorrarPartida(slot); // Asegurar borrado
+            SistemaGuardado.BorrarPartida(slot); //AsegurarBorrado
             return; // Salimos de la función para NO cargar los stats de muerte
         }
 
         Debug.Log("📂 CARGANDO DATOS...");
 
-        // 1. Cargar Jugador
+        //CargarJugador
         if (scriptJugador != null)
         {
             scriptJugador.vitalidad = datos.vidaJugador;
@@ -127,13 +126,13 @@ public class GameManager : MonoBehaviour
             Debug.Log($"✅ Jugador cargado: Vida {scriptJugador.vitalidad}");
         }
 
-        // 2. Cargar Rondas
+        //CargarRondas
         if(scriptRondas != null)
         {
             scriptRondas.rondaActual = datos.rondaActual;
         }
 
-        // 3. Cargar Armas
+        //CargarArmas
         if (scriptArmas != null)
         {
             for (int i = 0; i < datos.armas.Count; i++)
@@ -155,19 +154,19 @@ public class GameManager : MonoBehaviour
 
     public void TriggerGameOver()
     {
-        if (juegoTerminado) return; // Evitar que se llame dos veces
+        if (juegoTerminado) return; //EvitarDuplicado
 
         Debug.Log("☠️ GAME OVER - Eliminando partida...");
         
-        juegoTerminado = true; // <--- CAMBIO IMPORTANTE: Marcamos el juego como terminado
+        juegoTerminado = true; //JuegoTerminado
 
-        // 1. Borrar el archivo de guardado de este slot (Permadeath)
+        //BorrarPartidaActual
         SistemaGuardado.BorrarPartida(slotActual);
 
-        // 2. Mostrar pantalla de derrota
+        //MostrarGameOver
         if(panelGameOver != null) panelGameOver.SetActive(true);
 
-        // 3. Congelar el juego y soltar el ratón
+        //CongelarJuegoYSoltarCursor
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

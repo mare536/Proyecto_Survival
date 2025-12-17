@@ -30,6 +30,7 @@ public class MesaMejoras : MonoBehaviour
 
     void Start()
     {
+        //OcultarTiendaInicio
         if(panelTienda != null) 
             panelTienda.SetActive(false);
     }
@@ -56,6 +57,7 @@ public class MesaMejoras : MonoBehaviour
 
         if (tiendaAbierta)
         {
+            //AbrirTiendaConfig
             ConfigurarBotones();
             Time.timeScale = 0f; 
             Cursor.lockState = CursorLockMode.None;
@@ -97,7 +99,7 @@ public class MesaMejoras : MonoBehaviour
         }
     }
 
-    // --- FUNCIONES LÓGICAS ---
+    //---FuncionesLogicas---
 
     public void Boton_ComprarBalas()
     {
@@ -159,7 +161,7 @@ public class MesaMejoras : MonoBehaviour
         AlternarTienda(); 
     }
 
-    // --- DETECCION ---
+    //---Deteccion---
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") || other.GetComponent<Player>() || other.GetComponentInParent<Player>())

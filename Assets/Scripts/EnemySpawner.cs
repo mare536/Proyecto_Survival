@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-// Spawner sencillo: controla una ola por ronda. Genera "count" enemigos uno a uno
+//SpawnerSencillo
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;   // prefab (desde Project)
-    [SerializeField] private float spawnRadius = 8f;   // radio alrededor del spawner
-    [SerializeField] private float delayBetweenSpawns = 0.5f; // tiempo entre cada spawn de la ola
+    [SerializeField] private GameObject enemyPrefab;   //Prefab
+    [SerializeField] private float spawnRadius = 8f;   //SpawnRadius
+    [SerializeField] private float delayBetweenSpawns = 0.5f; //DelayBetweenSpawns
 
     private bool waveActive = false;
     private List<GameObject> spawnedThisWave = new List<GameObject>();
 
-    // Llamar desde RoundManager para iniciar la ola en este spawner
+    //IniciarOlaDesdeRoundManager
     public void StartWave(int count)
     {
         if (enemyPrefab == null) return;
@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(WaveRoutine(count));
     }
 
-    // Genera "count" enemigos de uno en uno (con delay); después espera a que todos mueran
+    //GenerarEnemigosYEsperar
     private IEnumerator WaveRoutine(int count)
     {
         waveActive = true;
@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            // posición aleatoria alrededor del spawner y ajustada a NavMesh si hay
+            //CalcularPosicionSpawn
             Vector3 offset = Random.insideUnitSphere * spawnRadius;
             offset.y = 0f;
             Vector3 candidate = transform.position + offset;
@@ -39,21 +39,21 @@ public class EnemySpawner : MonoBehaviour
             if (NavMesh.SamplePosition(candidate, out hit, 2f, NavMesh.AllAreas))
                 spawnPos = hit.position;
 
-            // Instanciar enemigo
+            //InstanciarEnemigo
             GameObject go = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
             var agent = go.GetComponent<NavMeshAgent>();
             if (agent != null) agent.Warp(spawnPos);
 
             spawnedThisWave.Add(go);
 
-            // esperar antes de generar el siguiente (evita spawnear todos a la vez)
+            //DelayEntreSpawns
             yield return new WaitForSeconds(delayBetweenSpawns);
         }
 
-        // Esperar hasta que TODOS los enemigos de esta ola sean destruidos
+        //EsperarFinOla
         while (true)
         {
-            // limpiar elementos ya destruidos
+            //LimpiarDestruidos
             spawnedThisWave.RemoveAll(x => x == null);
 
             if (spawnedThisWave.Count == 0)
@@ -62,10 +62,10 @@ public class EnemySpawner : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
 
-        // Ola finalizada
+        //OlaFinalizada
         waveActive = false;
     }
 
-    // opcional: para saber si hay ola en curso
+    //IsWaveActive
     public bool IsWaveActive() => waveActive;
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // ¡Importante!
+using UnityEngine.SceneManagement; //Importante
 
 public class MenuPausa : MonoBehaviour
 {
@@ -8,8 +8,8 @@ public class MenuPausa : MonoBehaviour
 
     void Start()
     {
-        // Al empezar el nivel, aseguramos cursor bloqueado y panel oculto
-        Time.timeScale = 1f; // Asegurar que el tiempo corre al entrar en la escena
+        //InicioNivelAjustes
+        Time.timeScale = 1f; //AjustarTimeScale
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
@@ -44,11 +44,11 @@ public class MenuPausa : MonoBehaviour
         }
     }
     
-    // CAMBIO: Ahora esta función carga el menú principal
+    //IrAlMenuPrincipal
     public void IrAlMenuPrincipal()
     {
-        // 1. ANTES de irnos, guardamos la partida automáticamente
-        // GameManager ya sabe en qué slot estamos porque lo cargó al inicio
+        //GuardarAntesSalir
+        //GameManager maneja el slot
         if (GameManager.instancia != null)
         {
             GameManager.instancia.GuardarJuego();

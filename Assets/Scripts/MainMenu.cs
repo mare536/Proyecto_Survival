@@ -1,15 +1,15 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Necesario para cambiar de escena
+using UnityEngine.SceneManagement; //NecesarioCambiarEscena
 
 public class MainMenu : MonoBehaviour
 {
-    // Asigna esta función al botón "JUGAR"
+    //AsignarABotonJugar
     public void Jugar()
     {
         SceneManager.LoadScene("SampleScene");
     }
 
-    // Asigna esta función al botón "SALIR"
+    //AsignarABotonSalir
     public void Salir()
     {
         Application.Quit();

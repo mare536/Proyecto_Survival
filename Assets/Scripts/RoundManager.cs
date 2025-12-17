@@ -13,16 +13,14 @@ public class RoundManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI textoRonda;
 
-    // Variable estática para que los enemigos sepan cuánto daño hacen
+    //VariableEstaticMultiplicador
     public static float CurrentMultiplier { get; private set; } = 1f;
 
-    // --- MAGIA DE PROGRAMACIÓN ---
-    // Variable privada real
+    //VariablePrivada
     [SerializeField] private int _rondaActual = 0; 
     private bool esperandoRonda = false;
 
-    // Variable PÚBLICA que usa el GameManager.
-    // Cuando cambiamos esta variable, ejecuta el código de dentro (set).
+    //PropiedadRondaPublica
     public int rondaActual
     {
         get { return _rondaActual; }
@@ -35,12 +33,12 @@ public class RoundManager : MonoBehaviour
 
     private void Start()
     {
-        // Al empezar, nos aseguramos de que todo esté sincronizado
+        //InicioSincronizar
         ActualizarTodo();
         StartCoroutine(MonitorRondas());
     }
 
-    // Esta función actualiza texto y dificultad basándose en el número de ronda
+    //ActualizarTextoYDificultad
     public void ActualizarTodo()
     {
         // 1. Actualizar Texto UI
@@ -48,7 +46,7 @@ public class RoundManager : MonoBehaviour
             textoRonda.text = "Ronda: " + _rondaActual;
 
         // 2. Actualizar Dificultad (Multiplicador)
-        // Si es ronda 0 o 1, es normal. Si es más, sube 15% por ronda.
+        //CalcularMultiplicador
         if (_rondaActual > 0)
             CurrentMultiplier = 1f + (_rondaActual - 1) * 0.15f;
         else
@@ -59,7 +57,7 @@ public class RoundManager : MonoBehaviour
     {
         while (true)
         {
-            // Comprueba si no hay enemigos y no estamos ya esperando
+                //ComprobarEnemigosYEsperando
             if (!esperandoRonda && Object.FindAnyObjectByType<EnemyHealth>() == null)
             {
                 StartCoroutine(StartNextRound());

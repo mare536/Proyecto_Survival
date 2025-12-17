@@ -1,40 +1,40 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using static Player; //Acceder varieble estaVivo de Player.cs
+using static Player; //AccederEstaVivo
 
 
 public class PlayerMovementSimple : MonoBehaviour
 {
-    [Header("Configuración de Movimiento")]
-    // Velocidad de movimiento en el suelo (m/s)
+    [Header("ConfiguracionMovimiento")]
+    //VelocidadMovimiento
     [SerializeField] private float VelocidadMovimiento;
-    // Sensibilidad del ratón para rotación
+    //VelocidadRotacion
     [SerializeField] private float VelocidadRotacion;
-    // Referencia al CharacterController que gestiona colisiones y movimiento básico
+    //ReferenciaCharacterController
     [SerializeField] private CharacterController characterController;
-    // Transform del jugador (se usa para girar el cuerpo en Y)
+    //TransformJugador
     [SerializeField] private Transform playerTransform;
-    // Cámara que mira desde la cabeza del jugador (se rota en X)
+    //CameraPersonaje
     [SerializeField] private Camera cameraPersonaje;
 
     [Header("Salto")]
-    // Altura objetivo del salto (metros)
+    //AlturaSalto
     [SerializeField] private float alturaSalto = 1.5f;
-    // Gravedad aplicada verticalmente (debe ser negativa, p.ej. -9.81)
+    //Gravedad
     [SerializeField] private float gravedad = -9.81f;
 
-    // Variables internas
-    private Vector3 movimiento; // usado si quieres almacenar movimiento general
-    private float rotacionX; // ángulo vertical actual de la cámara
-    private float velocidadVertical; // velocidad en Y (para salto/gravedad)
+    //VariablesInternas
+    private Vector3 movimiento; //MovimientoGeneral
+    private float rotacionX; //AnguloVerticalCamara
+    private float velocidadVertical; //VelocidadVertical
 
     [Header("Cursor / Puntero")]
-    // Imagen para el punto central (opcional)
+    //PunteroTexture
     [SerializeField] private Texture2D punteroTexture;
-    // Tamaño en píxeles del puntero
+    //TamanoPuntero
     [SerializeField] private Vector2 tamañoPuntero = new Vector2(16f, 16f);
-    // Estado si el cursor está bloqueado/oculto
+    //CursorBloqueado
     private bool cursorBloqueado = true;
     private Player playerScript;
 
@@ -42,7 +42,7 @@ public class PlayerMovementSimple : MonoBehaviour
 
     private void Update()
     {
-        // Si playerScript no está asignado, intentar obtenerlo (por si Player está añadido en runtime)
+        //ObtenerPlayerSiNecesario
         if (playerScript == null)
         {
             playerScript = GetComponent<Player>();
@@ -63,7 +63,7 @@ public class PlayerMovementSimple : MonoBehaviour
 
     private void Start()
     {
-        // Intentar obtener el script Player y avisar si falta
+        //BuscarPlayerAlInicio
         playerScript = GetComponent<Player>();
         if (playerScript == null)
         {
@@ -76,7 +76,7 @@ public class PlayerMovementSimple : MonoBehaviour
 
     void GestionCursor()
     {
-        // Pulsar Escape para desbloquear y mostrar cursor
+        //GestionInputCursor
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             BloquearCursor(false);
@@ -100,32 +100,30 @@ public class PlayerMovementSimple : MonoBehaviour
     {
         float movX = Input.GetAxis("Horizontal");
         float movZ = Input.GetAxis("Vertical");
-        // Movimiento horizontal basado en la orientación del jugador
+        //CalcularMovimientoHorizontal
         Vector3 movimientoHorizontal = transform.right * movX + transform.forward * movZ;
 
-        // Si estamos en tierra y la velocidad vertical es negativa, ajustarla ligeramente para mantener contacto
+        //ComprobarSueloYSalto
         if (characterController.isGrounded)
         {
-            // Pequeño ajuste para evitar que la velocidad vertical crezca en negativo
+            //AjusteVelocidadVertical
             if (velocidadVertical < 0f) velocidadVertical = -1f;
 
-            // Si pulsas la tecla Jump (por defecto Espacio), calculamos la velocidad
-            // inicial para alcanzar la altura deseada.
+            //ComprobarJump
             if (Input.GetButtonDown("Jump"))
             {
-                // Fórmula física para salto: v = sqrt(2 * g * h)
-                // gravedad es negativa, por eso usamos -gravedad.
+                //CalcularVelocidadSalto
                 velocidadVertical = Mathf.Sqrt(-2f * gravedad * alturaSalto);
             }
         }
 
-        // Aplicar gravedad
+        //AplicarGravedad
         velocidadVertical += gravedad * Time.deltaTime;
 
-        // Vector final con movimiento horizontal y vertical
+        //MovimientoFinal
         Vector3 movimientoFinal = movimientoHorizontal * VelocidadMovimiento + Vector3.up * velocidadVertical;
 
-        // Usar Move para controlar la componente Y manualmente
+        //MoverCharacterController
         characterController.Move(movimientoFinal * Time.deltaTime);
 
     }
@@ -138,14 +136,14 @@ public class PlayerMovementSimple : MonoBehaviour
         rotacionX -= mouseY;
         rotacionX = Mathf.Clamp(rotacionX, -90f, 90f);
 
-    // Rotar la cámara en X (mirar arriba/abajo) y el cuerpo en Y (giro horizontal)
+    //RotarCamaraYCuerpo
     cameraPersonaje.transform.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
     playerTransform.Rotate(Vector3.up * mouseX);
     }
 
     private void OnGUI()
     {
-        // Dibujar puntero en el centro de la pantalla si existe la textura
+        //DibujarPuntero
         if (punteroTexture != null && cursorBloqueado)
         {
             float x = (Screen.width - tamañoPuntero.x) / 2f;
@@ -155,7 +153,7 @@ public class PlayerMovementSimple : MonoBehaviour
         }
         else if (cursorBloqueado)
         {
-            // Si no hay textura, dibujar un simple punto con GUI
+            //DibujarPuntoPredeterminado
             float size = 4f;
             float x = (Screen.width - size) / 2f;
             float y = (Screen.height - size) / 2f;

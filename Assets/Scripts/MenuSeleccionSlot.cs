@@ -5,28 +5,28 @@ using TMPro;
 public class MenuSeleccionSlot : MonoBehaviour
 {
     [Header("Paneles")]
-    public GameObject panelPrincipal; // Arrastra aquí el Panel_Principal
-    public GameObject panelSlots;     // Arrastra aquí el Panel_Slots
+    public GameObject panelPrincipal; //PanelPrincipal
+    public GameObject panelSlots;     //PanelSlots
 
     [Header("Info Slots")]
-    public TextMeshProUGUI[] textosInfoSlots; // Los textos de los botones Slot 1, 2, 3
+    public TextMeshProUGUI[] textosInfoSlots; //TextosInfoSlots
 
     void Start()
     {
-        // Al empezar, nos aseguramos de que se vea el principal y no los slots
+        //InicioMostrarPaneles
         panelPrincipal.SetActive(true);
         panelSlots.SetActive(false);
         
         ActualizarInfoSlots();
     }
 
-    // --- LÓGICA VISUAL ---
+    //---LogicaVisual---
 
     public void MostrarSelectorDeSlots()
     {
-        panelPrincipal.SetActive(false); // Ocultamos menú principal
-        panelSlots.SetActive(true);      // Mostramos slots
-        ActualizarInfoSlots();           // Refrescamos la info por si acaso
+        panelPrincipal.SetActive(false); //OcultarPrincipal
+        panelSlots.SetActive(true);      //MostrarSlots
+        ActualizarInfoSlots();           //ActualizarInfoSlots
     }
 
     public void VolverAlMenuPrincipal()
@@ -35,15 +35,15 @@ public class MenuSeleccionSlot : MonoBehaviour
         panelPrincipal.SetActive(true);
     }
 
-    // --- LÓGICA DE CARGA ---
+    //---LogicaCarga---
 
     public void JugarSlot(int slot)
     {
-        // 1. Guardamos en la memoria temporal qué slot ha elegido el jugador
+        //GuardarSlotSeleccionado
         PlayerPrefs.SetInt("SlotSeleccionado", slot);
         PlayerPrefs.Save(); // Aseguramos que se guarde el dato
 
-        // 2. Cargamos la escena del juego
+        //CargarEscenaJuego
         SceneManager.LoadScene("SampleScene");
     }
 
@@ -61,7 +61,7 @@ public class MenuSeleccionSlot : MonoBehaviour
             if (SistemaGuardado.ExistePartida(numSlot))
             {
                 DatosJuego datos = SistemaGuardado.CargarPartida(numSlot);
-                // Ejemplo: "SLOT 1 \n Ronda 5 - 1500 pts"
+                //EjemploTextoSlot
                 textosInfoSlots[i].text = $"SLOT {numSlot}\nRonda {datos.rondaActual} - {datos.puntosJugador} pts";
             }
             else

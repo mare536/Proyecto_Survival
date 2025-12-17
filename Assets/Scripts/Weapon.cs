@@ -68,8 +68,7 @@ public class Weapon : MonoBehaviour
         {
             foreach (var w in weapons)
             {
-                // Solo inicializamos munición si es la primera vez (no tras cargar partida)
-                // Pero para simplificar, dejaremos que el GameManager sobrescriba esto luego si cargamos partida
+                //InicializarMunicion
                 w.currentAmmo = w.magazineSize;
                 w.currentReserve = w.reserveAmmo;
             }
@@ -131,7 +130,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    // CAMBIO 3: Ahora es PUBLIC para que el GameManager pueda llamar a esta función al cargar partida
+    //EquipWeaponPublic
     public void EquipWeapon(int index)
     {
         if (index == currentIdx && currentModel != null) return;
@@ -177,6 +176,7 @@ public class Weapon : MonoBehaviour
 
     private IEnumerator ReloadRoutine()
     {
+        //ReloadRoutine
         isReloading = true;
         WeaponEntry w = CurrentWeapon;
         if (textoInfo != null) textoInfo.text = "Recargando...";

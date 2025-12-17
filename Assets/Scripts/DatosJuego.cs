@@ -9,7 +9,7 @@ public class DatosJuego
     public int rondaActual;
     public int puntosJugador;
     public float vidaJugador;
-    public float[] posicionJugador; // Guardamos x, y, z
+    public float[] posicionJugador; //GuardarPosicionXYZ
 
     // Datos de Armas (Lista para guardar cada una)
     public int indiceArmaEquipada;
@@ -25,5 +25,5 @@ public class DatosArmaGuardada
     public string nombreID;
     public int municionCargador;
     public int municionReserva;
-    public float dañoActual; // Por si lo mejoraste en la mesa
+    public float dañoActual; //DanoActual
 }
