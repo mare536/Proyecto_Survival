@@ -12,8 +12,6 @@ public class WeaponEntry
     public float range = 50f;
     public float fireRate = 0.1f;
     public bool automatic = false;
-
-    [Header("Escopeta")]
     public int pellets = 1;
     public float spread = 0f;
 
@@ -28,7 +26,7 @@ public class WeaponEntry
     public GameObject modelPrefab;
     public Vector3 modelLocalPosition = Vector3.zero;
 
-    // Runtime
+    //Runtime
     [HideInInspector] public int currentAmmo;
     [HideInInspector] public int currentReserve;
 }
@@ -36,19 +34,19 @@ public class WeaponEntry
 [RequireComponent(typeof(AudioSource))]
 public class Weapon : MonoBehaviour
 {
-    // --- CONFIGURACIÓN ---
+    //---Configuracion---
     [Header("Referencias")]
     [SerializeField] private Camera camara;
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private TextMeshProUGUI textoInfo;
 
     [Header("Inventario")]
-    // CAMBIO 1: Ahora es PUBLIC para que el GameManager pueda guardar las balas de cada arma
+    //Cambio1 publico para guardar balas GameManager
     public WeaponEntry[] weapons; 
     [SerializeField] private int startIndex = 0;
 
-    // --- ESTADO ---
-    // CAMBIO 2: Ahora es PUBLIC para guardar qué arma tenías en la mano
+    //---Estado---
+    //publico para guardar indice arma en GameManager
     public int currentIdx = 0; 
     
     private float lastShotTime;
@@ -58,6 +56,7 @@ public class Weapon : MonoBehaviour
 
     public WeaponEntry CurrentWeapon => weapons[currentIdx];
 
+    //Inicializar Armas y Municion
     void Start()
     {
         if (camara == null) camara = Camera.main;
@@ -68,7 +67,7 @@ public class Weapon : MonoBehaviour
         {
             foreach (var w in weapons)
             {
-                //InicializarMunicion
+                //Inicializar municion
                 w.currentAmmo = w.magazineSize;
                 w.currentReserve = w.reserveAmmo;
             }
@@ -77,6 +76,7 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    //Actualizar Entrada y Estado
     void Update()
     {
         if (Time.timeScale == 0) return;
@@ -88,6 +88,7 @@ public class Weapon : MonoBehaviour
         HandleShooting();
     }
 
+    //Cambiar Arma por Numero o Scroll
     private void HandleWeaponSwitch()
     {
         for (int i = 0; i < weapons.Length; i++)
@@ -98,6 +99,7 @@ public class Weapon : MonoBehaviour
         else if (scroll < 0f) EquipWeapon((currentIdx - 1 + weapons.Length) % weapons.Length);
     }
 
+    //Iniciar Recarga Si Se Solicita
     private void HandleReload()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -108,29 +110,27 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    //Gestionar Disparo Segun Tipo y Cadencia
     private void HandleShooting()
     {
         if (isReloading) return;
         WeaponEntry w = CurrentWeapon;
         bool triggerPulled = w.automatic ? Input.GetMouseButton(0) : Input.GetMouseButtonDown(0);
+        if (!triggerPulled || Time.time < lastShotTime + w.fireRate) return;
 
-        if (triggerPulled && Time.time >= lastShotTime + w.fireRate)
+        if (w.currentAmmo <= 0)
         {
-            if (w.currentAmmo <= 0)
-            {
-                if (w.currentReserve > 0) StartCoroutine(ReloadRoutine());
-            }
-            else
-            {
-                PerformShoot();
-                w.currentAmmo--;
-                lastShotTime = Time.time;
-                UpdateUI();
-            }
+            if (w.currentReserve > 0) StartCoroutine(ReloadRoutine());
+            return;
         }
+
+        PerformShoot();
+        w.currentAmmo--;
+        lastShotTime = Time.time;
+        UpdateUI();
     }
 
-    //EquipWeaponPublic
+    //Equipar Arma y Crear Modelo
     public void EquipWeapon(int index)
     {
         if (index == currentIdx && currentModel != null) return;
@@ -146,6 +146,7 @@ public class Weapon : MonoBehaviour
         UpdateUI();
     }
 
+    //Realizar Raycasts y hacer daño
     private void PerformShoot()
     {
         WeaponEntry w = CurrentWeapon;
@@ -153,30 +154,30 @@ public class Weapon : MonoBehaviour
         int totalShots = Mathf.Max(1, w.pellets);
         for (int i = 0; i < totalShots; i++)
         {
-            Vector3 direction = camara.transform.forward;
+            Vector3 dir = camara.transform.forward;
             if (w.spread > 0)
             {
                 float x = Random.Range(-w.spread, w.spread);
                 float y = Random.Range(-w.spread, w.spread);
-                direction = Quaternion.Euler(x, y, 0) * direction;
+                dir = Quaternion.Euler(x, y, 0f) * dir;
             }
-            if (Physics.Raycast(camara.transform.position, direction, out RaycastHit hit, w.range))
+
+            if (!Physics.Raycast(camara.transform.position, dir, out RaycastHit hit, w.range)) continue;
+
+            var enemy = hit.collider.GetComponentInParent<EnemyHealth>();
+            if (enemy != null) enemy.recibirDaño(w.damage);
+
+            if (w.impactPrefab != null)
             {
-                EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
-                if (enemy != null) enemy.recibirDaño(w.damage);
-                
-                if (w.impactPrefab != null)
-                {
-                    GameObject impact = Instantiate(w.impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(impact, 2f);
-                }
+                var impact = Instantiate(w.impactPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impact, 2f);
             }
         }
     }
 
+    //Recarga
     private IEnumerator ReloadRoutine()
     {
-        //ReloadRoutine
         isReloading = true;
         WeaponEntry w = CurrentWeapon;
         if (textoInfo != null) textoInfo.text = "Recargando...";
@@ -196,6 +197,7 @@ public class Weapon : MonoBehaviour
 
     public void UpdateUI()
     {
+        //Actualizar Texto de Municion
         if (textoInfo == null) return;
         WeaponEntry w = CurrentWeapon;
         textoInfo.text = $"{w.weaponName} {w.currentAmmo}/{w.currentReserve}";
@@ -203,6 +205,7 @@ public class Weapon : MonoBehaviour
 
     public WeaponEntry GetArmaActual()
     {
+        //Obtener Entrada Arma Actual
         return weapons[currentIdx];
     }
     
