@@ -84,6 +84,7 @@ public class Player : MonoBehaviour
         if (puntos >= cantidad)
         {
             puntos -= cantidad;
+            textoPuntos.text = "Puntos: " + puntos;
             return true; //CompraRealizada
         }
         else
