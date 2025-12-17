@@ -53,8 +53,8 @@ public class RoundManager : MonoBehaviour
             CurrentMultiplier = 1f;
     }
 
-    // IEnumerator: método usado como corutina para pausar sin bloquear el juego.
-    // Se inicia con StartCoroutine(...) y utiliza 'yield return' para esperar.
+    //IEnumerator: método usado como corutina para pausar sin bloquear el juego.
+    //Se inicia con StartCoroutine(...) y utiliza 'yield return' para esperar.
     private IEnumerator MonitorRondas()
     {
         while (true)
@@ -68,7 +68,7 @@ public class RoundManager : MonoBehaviour
         }
     }
 
-    // Nota: WaitForSeconds depende de Time.timeScale; usa WaitForSecondsRealtime si quieres ignorar timeScale
+    //WaitForSeconds depende de Time.timeScale
     private IEnumerator StartNextRound()
     {
         esperandoRonda = true;
@@ -82,7 +82,7 @@ public class RoundManager : MonoBehaviour
 
         yield return new WaitForSeconds(tiempoEntreRondas);
 
-        // Avisar a todos los spawners
+        // Avisar a los spawners
         var spawners = Object.FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
         foreach (var s in spawners)
         {

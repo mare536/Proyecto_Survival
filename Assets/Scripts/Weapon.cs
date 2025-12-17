@@ -7,7 +7,7 @@ public class WeaponEntry
 {
     //Nombre del arma
     public string weaponName = "Arma"; 
-    //Combate: daño, alcance, cadencia, etc.
+    //Combate: daño, alcance, cadencia, dispercion.
     [Header("Combate")]
     public float damage = 25f;
     public float range = 50f;

@@ -6,9 +6,9 @@ using UnityEngine.AI;
 //SpawnerSencillo
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab;   //Prefab
-    [SerializeField] private float spawnRadius = 8f;   //SpawnRadius
-    [SerializeField] private float delayBetweenSpawns = 0.5f; //DelayBetweenSpawns
+    [SerializeField] private GameObject enemyPrefab;   //Prefab del enemigo
+    [SerializeField] private float spawnRadius = 8f;   //Spawn Radio
+    [SerializeField] private float delayBetweenSpawns = 0.5f; //DelayEnbtreSpawns
 
     private bool waveActive = false;
     private List<GameObject> spawnedThisWave = new List<GameObject>();

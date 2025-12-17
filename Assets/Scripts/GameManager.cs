@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
         // No guardar si el juego terminó
         if (juegoTerminado) 
         {
-            Debug.LogWarning("❌ Intento de guardar bloqueado porque el jugador ha muerto.");
+            Debug.LogWarning("Intento de guardar bloqueado porque el jugador ha muerto.");
             return; 
         }
 
@@ -113,12 +113,12 @@ public class GameManager : MonoBehaviour
         // Si la vida cargada es 0, borrar el guardado (evitar cargar muerte)
         if (datos.vidaJugador <= 0)
         {
-            Debug.LogError("☠️ Se detectó una partida guardada con el jugador muerto. Eliminando y reiniciando.");
+            Debug.LogError("Se detectó una partida guardada con el jugador muerto. Eliminando y reiniciando.");
             SistemaGuardado.BorrarPartida(slot); //AsegurarBorrado
             return; // Salimos de la función para NO cargar los stats de muerte
         }
 
-        Debug.Log("📂 CARGANDO DATOS...");
+        Debug.Log("CARGANDO DATOS...");
 
         // Restaurar vida, puntos y posición del jugador
         if (scriptJugador != null)
@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviour
     {
         if (juegoTerminado) return; //EvitarDuplicado
 
-        Debug.Log("☠️ GAME OVER - Eliminando partida...");
+        Debug.Log("GAME OVER - Eliminando partida...");
         
         juegoTerminado = true; //JuegoTerminado
 
